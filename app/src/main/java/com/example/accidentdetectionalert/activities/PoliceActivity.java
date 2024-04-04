@@ -13,4 +13,9 @@ public class PoliceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_police);
     }
+
+    // Police is able to see to Today’s accident specifically or filter date wise to see previous ones.
+
+    // Police will get a notification if it is assigned a Pickup.
+
 }

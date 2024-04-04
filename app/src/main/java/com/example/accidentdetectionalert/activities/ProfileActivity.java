@@ -13,4 +13,5 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
     }
+    // User can edit their profile as well as add Emergency Contacts
 }

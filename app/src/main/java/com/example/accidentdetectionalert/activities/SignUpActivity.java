@@ -13,4 +13,7 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
     }
+    // User can register using personal details.
+
+    // Police, Ambulance, Citizen, Admin, Hospital
 }
