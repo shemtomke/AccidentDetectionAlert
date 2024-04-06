@@ -1,16 +1,16 @@
 package com.example.accidentdetectionalert.models;
 
 public class EmergencyContact {
-    public String id;
+    public int id;
     public User user;
     public String fullName;
     public String phoneContact;
 
-    public String getId(){return id;}
+    public int getId(){return id;}
     public User getUser(){return user;}
     public String getFullName(){return fullName;}
     public String getPhoneContact(){return phoneContact;}
-    public void setId(String _id)
+    public void setId(int _id)
     {
         id = _id;
     }
@@ -23,7 +23,7 @@ public class EmergencyContact {
         phoneContact = phoneNumber;
     }
     public void setUser(User _user){user = _user;}
-    public EmergencyContact(String _id, User _user, String fullname, String phoneNumber)
+    public EmergencyContact(int _id, User _user, String fullname, String phoneNumber)
     {
         id = _id;
         user = _user;

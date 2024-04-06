@@ -1,14 +1,14 @@
 package com.example.accidentdetectionalert.models;
 
 public class User {
-    private String userId;
+    private int userId;
     private String email;
     private String password;
     private String fullName;
     private String phoneNumber;
     public String role;
 
-    public String getUserId(){return userId;}
+    public int getUserId(){return userId;}
     public String getEmail(){return email;}
     public String getPassword(){return password;}
     public String getFullName(){return fullName;}
@@ -20,7 +20,7 @@ public class User {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
-    public void setUserId(String _userId)
+    public void setUserId(int _userId)
     {
         userId = _userId;
     }
@@ -43,9 +43,17 @@ public class User {
         email = _email;
         password = _password;
     }
-    public User(String id, String _email, String phonenumber, String _password, String _fullName, String _role)
+    public User(int id, String _fullName, String _email, String _password, String phonenumber,  String _role)
     {
         userId = id;
+        email = _email;
+        phoneNumber = phonenumber;
+        password = _password;
+        fullName = _fullName;
+        role = _role;
+    }
+    public User(String _fullName, String _email, String _password, String phonenumber, String _role)
+    {
         email = _email;
         phoneNumber = phonenumber;
         password = _password;

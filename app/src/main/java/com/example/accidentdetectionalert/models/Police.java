@@ -1,11 +1,11 @@
 package com.example.accidentdetectionalert.models;
 
 public class Police {
-    private String policeId;
+    private int policeId;
     private User user;
     private String location;
 
-    public String getPoliceId() {
+    public int getPoliceId() {
         return policeId;
     }
     public User getUser() {
@@ -15,7 +15,7 @@ public class Police {
         return location;
     }
 
-    public void setPoliceId(String policeId) {
+    public void setPoliceId(int policeId) {
         this.policeId = policeId;
     }
     public void setUser(User user) {
@@ -24,7 +24,7 @@ public class Police {
     public void setLocation(String location) {
         this.location = location;
     }
-    public Police(String policeID, User _user, String _location)
+    public Police(int policeID, User _user, String _location)
     {
         policeId = policeID;
         user = _user;

@@ -1,13 +1,13 @@
 package com.example.accidentdetectionalert.models;
 
 public class Ambulance {
-    private String ambulanceId;
+    private int ambulanceId;
     private User user;
     private Hospital hospital;
     private String location;
     private boolean isAvailable;
 
-    public String getAmbulanceId() {
+    public int getAmbulanceId() {
         return ambulanceId;
     }
     public User getUser() {
@@ -25,7 +25,7 @@ public class Ambulance {
     public void setLocation(String location) {
         this.location = location;
     }
-    public void setAmbulanceId(String ambulanceId) {
+    public void setAmbulanceId(int ambulanceId) {
         this.ambulanceId = ambulanceId;
     }
     public void setAvailable(boolean available) {
@@ -34,7 +34,7 @@ public class Ambulance {
     public void setUser(User user) {
         this.user = user;
     }
-    public Ambulance(String _ambulanceId, User _user, Hospital _hospital, String _location)
+    public Ambulance(int _ambulanceId, User _user, Hospital _hospital, String _location)
     {
         ambulanceId = _ambulanceId;
         user = _user;

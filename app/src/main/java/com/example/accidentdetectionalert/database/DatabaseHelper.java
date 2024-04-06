@@ -27,16 +27,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // Create Table
-        db.execSQL("CREATE TABLE user (id TEXT PRIMARY KEY, fullname TEXT, email TEXT, password TEXT, phonenumber TEXT, Role Text)");
-        db.execSQL("CREATE TABLE accident (id TEXT PRIMARY KEY, user_id TEXT, date_time TEXT, location TEXT, status TEXT, " +
+        db.execSQL("CREATE TABLE user (id INTEGER PRIMARY KEY, fullname TEXT, email TEXT, password TEXT, phonenumber TEXT, Role Text)");
+        db.execSQL("CREATE TABLE accident (id INTEGER PRIMARY KEY, user_id TEXT, date_time TEXT, location TEXT, status TEXT, " +
                 "FOREIGN KEY (user_id) REFERENCES user(id))");
-        db.execSQL("CREATE TABLE emergencyContact (id TEXT PRIMARY KEY, user_id TEXT, name TEXT, phoneNumber TEXT, " +
+        db.execSQL("CREATE TABLE emergencyContact (id INTEGER PRIMARY KEY, user_id TEXT, name TEXT, phoneNumber TEXT, " +
                 "FOREIGN KEY (user_id) REFERENCES user(id))");
-        db.execSQL("CREATE TABLE hospital (id TEXT PRIMARY KEY, user_id TEXT, location TEXT, " +
+        db.execSQL("CREATE TABLE hospital (id INTEGER PRIMARY KEY, user_id TEXT, location TEXT, " +
                 "FOREIGN KEY (user_id) REFERENCES user(id))");
-        db.execSQL("CREATE TABLE police (id TEXT PRIMARY KEY, user_id TEXT, location TEXT, " +
+        db.execSQL("CREATE TABLE police (id INTEGER PRIMARY KEY, user_id TEXT, location TEXT, " +
                 "FOREIGN KEY (user_id) REFERENCES user(id))");
-        db.execSQL("CREATE TABLE ambulance (id TEXT PRIMARY KEY, user_id TEXT, hospital_id TEXT, location TEXT, " +
+        db.execSQL("CREATE TABLE ambulance (id INTEGER PRIMARY KEY, user_id TEXT, hospital_id TEXT, location TEXT, " +
                 "FOREIGN KEY (user_id) REFERENCES user(id), " +
                 "FOREIGN KEY (hospital_id) REFERENCES hospital(id))");
     }
@@ -48,7 +48,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void createUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put("id", user.getUserId());
         values.put("fullname", user.getFullName());
         values.put("email", user.getEmail());
         values.put("password", user.getPassword());
@@ -57,29 +56,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert("user", null, values);
         db.close();
     }
-    public User getUser(String userId) {
+    public User getUser(int userId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query("user", null, "id=?", new String[]{userId}, null, null, null);
+        Cursor cursor = db.query("user", null, "id=?", new String[]{String.valueOf(userId)}, null, null, null);
         User user = null;
         if (cursor != null && cursor.moveToFirst()) {
-            int idIndex = cursor.getColumnIndex("id");
-            int fullnameIndex = cursor.getColumnIndex("fullname");
-            int emailIndex = cursor.getColumnIndex("email");
-            int passwordIndex = cursor.getColumnIndex("password");
-            int phonenumberIndex = cursor.getColumnIndex("phonenumber");
-            int roleIndex = cursor.getColumnIndex("role");
-
-            if (idIndex != -1 && fullnameIndex != -1 && emailIndex != -1 && passwordIndex != -1
-                    && phonenumberIndex != -1 && roleIndex != -1) {
-                user = new User(
-                        cursor.getString(idIndex),
-                        cursor.getString(emailIndex),
-                        cursor.getString(phonenumberIndex),
-                        cursor.getString(passwordIndex),
-                        cursor.getString(fullnameIndex),
-                        cursor.getString(roleIndex)
-                );
-            }
+            user = new User(
+                    cursor.getInt(0),
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getString(3),
+                    cursor.getString(4),
+                    cursor.getString(5)
+            );
             cursor.close();
         }
         db.close();
@@ -91,25 +80,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT * FROM user", null);
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                int idIndex = cursor.getColumnIndex("id");
-                int fullnameIndex = cursor.getColumnIndex("fullname");
-                int emailIndex = cursor.getColumnIndex("email");
-                int passwordIndex = cursor.getColumnIndex("password");
-                int phonenumberIndex = cursor.getColumnIndex("phonenumber");
-                int roleIndex = cursor.getColumnIndex("role");
-
-                if (idIndex != -1 && fullnameIndex != -1 && emailIndex != -1 && passwordIndex != -1
-                        && phonenumberIndex != -1 && roleIndex != -1) {
-                    User user = new User(
-                            cursor.getString(idIndex),
-                            cursor.getString(emailIndex),
-                            cursor.getString(phonenumberIndex),
-                            cursor.getString(passwordIndex),
-                            cursor.getString(fullnameIndex),
-                            cursor.getString(roleIndex)
-                    );
-                    userList.add(user);
-                }
+                User user = new User(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getString(4),
+                        cursor.getString(5)
+                );
+                userList.add(user);
             } while (cursor.moveToNext());
             cursor.close();
         }
@@ -162,9 +141,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         && fullnameIndex != -1 && emailIndex != -1 && passwordIndex != -1
                         && phonenumberIndex != -1 && roleIndex != -1) {
                     Accident accident = new Accident(
-                            cursor.getString(accidentIdIndex),
+                            cursor.getInt(accidentIdIndex),
                             new User(
-                                    cursor.getString(userIdIndex),
+                                    cursor.getInt(userIdIndex),
                                     cursor.getString(fullnameIndex),
                                     cursor.getString(emailIndex),
                                     cursor.getString(passwordIndex),
@@ -210,9 +189,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         && fullnameIndex != -1 && emailIndex != -1 && passwordIndex != -1
                         && phonenumberIndex != -1 && roleIndex != -1) {
                     Accident accident = new Accident(
-                            cursor.getString(accidentIdIndex),
+                            cursor.getInt(accidentIdIndex),
                             new User(
-                                    cursor.getString(userIdIndex),
+                                    cursor.getInt(userIdIndex),
                                     cursor.getString(fullnameIndex),
                                     cursor.getString(emailIndex),
                                     cursor.getString(passwordIndex),
@@ -231,11 +210,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return accidents;
     }
-    public List<Accident> getAccidentsForUser(String userId) {
+    public List<Accident> getAccidentsForUser(int userId) {
         List<Accident> accidents = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM accident WHERE user_id = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{userId});
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 int accidentIdIndex = cursor.getColumnIndex("id");
@@ -245,7 +224,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 if (accidentIdIndex != -1 && dateTimeIndex != -1 && locationIndex != -1 && statusIndex != -1) {
                     Accident accident = new Accident(
-                            cursor.getString(accidentIdIndex),
+                            cursor.getInt(accidentIdIndex),
                             getUser(userId), // Retrieve the user object associated with the accident
                             cursor.getString(dateTimeIndex),
                             cursor.getString(locationIndex),
@@ -272,12 +251,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert("emergencyContact", null, values);
         db.close();
     }
-    public List<EmergencyContact> getEmergencyContactsByUserId(String userId) {
+    public List<EmergencyContact> getEmergencyContactsByUserId(int userId) {
         List<EmergencyContact> emergencyContactList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         String[] columns = {"id", "user_id", "name", "phoneNumber"};
         String selection = "user_id=?";
-        String[] selectionArgs = {userId};
+        String[] selectionArgs = {String.valueOf(userId)};
         Cursor cursor = db.query("emergencyContact", columns, selection, selectionArgs, null, null, null);
         if (cursor != null) {
             int idIndex = cursor.getColumnIndex("id");
@@ -285,7 +264,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int phoneNumberIndex = cursor.getColumnIndex("phoneNumber");
             if (cursor.moveToFirst() && idIndex >= 0 && nameIndex >= 0 && phoneNumberIndex >= 0) {
                 do {
-                    String emergencyContactId = cursor.getString(idIndex);
+                    int emergencyContactId = cursor.getInt(idIndex);
                     String name = cursor.getString(nameIndex);
                     String phoneNumber = cursor.getString(phoneNumberIndex);
 
@@ -311,11 +290,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert("hospital", null, values);
         db.close();
     }
-    public Hospital getHospitalById(String hospitalId) {
+    public Hospital getHospitalById(int hospitalId) {
         SQLiteDatabase db = this.getReadableDatabase();
         String[] columns = {"id", "user_id", "location"};
         String selection = "id=?";
-        String[] selectionArgs = {hospitalId};
+        String[] selectionArgs = {String.valueOf(hospitalId)};
         Cursor cursor = db.query("hospital", columns, selection, selectionArgs, null, null, null);
         Hospital hospital = null;
         if (cursor != null) {
@@ -323,7 +302,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int userIdIndex = cursor.getColumnIndex("user_id");
             int locationIndex = cursor.getColumnIndex("location");
             if (cursor.moveToFirst() && idIndex >= 0 && userIdIndex >= 0 && locationIndex >= 0) {
-                String userId = cursor.getString(userIdIndex);
+                int userId = cursor.getInt(userIdIndex);
                 String location = cursor.getString(locationIndex);
 
                 // Retrieve the user object associated with the hospital
@@ -345,8 +324,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int userIdIndex = cursor.getColumnIndex("user_id");
             int locationIndex = cursor.getColumnIndex("location");
             while (cursor.moveToNext()) {
-                String hospitalId = cursor.getString(idIndex);
-                String userId = cursor.getString(userIdIndex);
+                int hospitalId = cursor.getInt(idIndex);
+                int userId = cursor.getInt(userIdIndex);
                 String location = cursor.getString(locationIndex);
 
                 // Retrieve the user object associated with the hospital
@@ -375,11 +354,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert("police", null, values);
         db.close();
     }
-    public Police getPoliceById(String policeId) {
+    public Police getPoliceById(int policeId) {
         SQLiteDatabase db = this.getReadableDatabase();
         String[] columns = {"id", "user_id", "location"};
         String selection = "id=?";
-        String[] selectionArgs = {policeId};
+        String[] selectionArgs = {String.valueOf(policeId)};
         Cursor cursor = db.query("police", columns, selection, selectionArgs, null, null, null);
         Police police = null;
         if (cursor != null) {
@@ -387,7 +366,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int userIdIndex = cursor.getColumnIndex("user_id");
             int locationIndex = cursor.getColumnIndex("location");
             if (cursor.moveToFirst() && idIndex >= 0 && userIdIndex >= 0 && locationIndex >= 0) {
-                String userId = cursor.getString(userIdIndex);
+                int userId = cursor.getInt(userIdIndex);
                 String location = cursor.getString(locationIndex);
 
                 // Retrieve the user object associated with the police
@@ -414,12 +393,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert("ambulance", null, values);
         db.close();
     }
-    public List<Ambulance> getAmbulancesForHospital(String hospitalId) {
+    public List<Ambulance> getAmbulancesForHospital(int hospitalId) {
         List<Ambulance> ambulanceList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         String[] columns = {"id", "user_id", "hospital_id", "location"};
         String selection = "hospital_id=?";
-        String[] selectionArgs = {hospitalId};
+        String[] selectionArgs = {String.valueOf(hospitalId)};
         Cursor cursor = db.query("ambulance", columns, selection, selectionArgs, null, null, null);
         if (cursor != null) {
             while (cursor.moveToNext()) {
@@ -429,8 +408,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 int locationIndex = cursor.getColumnIndex("location");
 
                 if (idIndex >= 0 && userIdIndex >= 0 && hospitalIdIndex >= 0 && locationIndex >= 0) {
-                    String id = cursor.getString(idIndex);
-                    String userId = cursor.getString(userIdIndex);
+                    int id = cursor.getInt(idIndex);
+                    int userId = cursor.getInt(userIdIndex);
                     String location = cursor.getString(locationIndex);
 
                     // Assuming you have a method to get a user and hospital based on their IDs

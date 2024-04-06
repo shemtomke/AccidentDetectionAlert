@@ -1,17 +1,17 @@
 package com.example.accidentdetectionalert.models;
 
 public class Accident {
-    private String accidentId;
+    private int accidentId;
     private User user;
     private String location;
     private String dateTime;
     private String status;
-    public String getAccidentId(){return accidentId;}
+    public int getAccidentId(){return accidentId;}
     public User getUser(){return user;}
     public String getLocation(){return location;}
     public String getDateTime(){return dateTime;}
     public String getStatus(){return status;}
-    public void setAccidentId(String accidentId) {
+    public void setAccidentId(int accidentId) {
         this.accidentId = accidentId;
     }
     public void setDateTime(String dateTime) {
@@ -26,7 +26,7 @@ public class Accident {
     public void setUser(User user) {
         this.user = user;
     }
-    public Accident(String _accidentId, User _user, String _dateTime, String _location, String _status)
+    public Accident(int _accidentId, User _user, String _dateTime, String _location, String _status)
     {
         accidentId = _accidentId;
         user = _user;
@@ -34,7 +34,7 @@ public class Accident {
         location = _location;
         status = _status;
     }
-    public Accident(String _accidentId, String _dateTime, String _location, String _status)
+    public Accident(int _accidentId, String _dateTime, String _location, String _status)
     {
         accidentId = _accidentId;
         dateTime = _dateTime;

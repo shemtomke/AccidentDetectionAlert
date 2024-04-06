@@ -1,10 +1,10 @@
 package com.example.accidentdetectionalert.models;
 
 public class Hospital {
-    private String hospitalId;
+    private int hospitalId;
     private User user;
     private String location;
-    public String getHospitalId(){return hospitalId;}
+    public int getHospitalId(){return hospitalId;}
     public User getUser(){return user;}
     public String getLocation(){return location;}
     public void setUser(User user) {
@@ -13,10 +13,10 @@ public class Hospital {
     public void setLocation(String location) {
         this.location = location;
     }
-    public void setHospitalId(String hospitalId) {
+    public void setHospitalId(int hospitalId) {
         this.hospitalId = hospitalId;
     }
-    public Hospital(String _hospitalId, User _user, String _location)
+    public Hospital(int _hospitalId, User _user, String _location)
     {
         hospitalId = _hospitalId;
         user = _user;
