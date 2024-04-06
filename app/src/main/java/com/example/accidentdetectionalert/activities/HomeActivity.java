@@ -1,15 +1,11 @@
 package com.example.accidentdetectionalert.activities;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -27,8 +23,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.accidentdetectionalert.R;
-import com.example.accidentdetectionalert.services.AccidentDetectionService;
+import com.example.accidentdetectionalert.utils.LocationUtils;
 
+import java.io.File;
 import java.io.IOException;
 
 public class HomeActivity extends AppCompatActivity implements SensorEventListener {
@@ -38,11 +35,15 @@ public class HomeActivity extends AppCompatActivity implements SensorEventListen
     SensorManager sensorManager;
     Sensor accelerometerSensor;
     private static final float THRESHOLD_ACCELEROMETER = 15.0f;
-    private static final int THRESHOLD_SOUND = 40;
+    private static final int THRESHOLD_SOUND = 80;
     boolean isAccelerometerSensorAvailable;
     private MediaRecorder mediaRecorder;
     private boolean mIsRecording = false;
     private static final int RECORD_AUDIO_PERMISSION_CODE = 1001;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
+    private Handler mHandler = new Handler();
+    private AlertDialog alertDialog;
+    private static final int NOTIFICATION_DELAY = 5000; // 5 seconds delay
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +53,8 @@ public class HomeActivity extends AppCompatActivity implements SensorEventListen
         soundMeterText = findViewById(R.id.soundMeterText);
         detectionSwitch = findViewById(R.id.switchDetection);
 
+        getCurrentLocation();
+
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
         if(sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
@@ -60,6 +63,7 @@ public class HomeActivity extends AppCompatActivity implements SensorEventListen
         } else{
             isAccelerometerSensorAvailable = false;
         }
+
         detectionSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -73,6 +77,12 @@ public class HomeActivity extends AppCompatActivity implements SensorEventListen
                 }
             }
         });
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopDetectionService();
+        stopRecording();
     }
     private void startRecording() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -90,7 +100,8 @@ public class HomeActivity extends AppCompatActivity implements SensorEventListen
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mediaRecorder.setOutputFile("/dev/null");
+        File outputFile = new File(getExternalCacheDir(), "test.3gp");
+        mediaRecorder.setOutputFile(outputFile.getAbsolutePath());
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
         try {
@@ -106,31 +117,6 @@ public class HomeActivity extends AppCompatActivity implements SensorEventListen
 
         mediaRecorder.start();
         mIsRecording = true;
-
-        // Start a thread to update the sound level
-        new Thread(new Runnable() {
-            public void run() {
-                while (mIsRecording) {
-                    try {
-                        Thread.sleep(1000); // Update every second
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                    // Calculate the sound level
-                    int amplitude = mediaRecorder.getMaxAmplitude();
-                    double amplitudeDb = 20 * Math.log10((double) Math.abs(amplitude));
-
-                    // Update UI or do something with the sound level
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            soundMeterText.setText("Amplitude: " + amplitude + " dB: " + amplitudeDb);
-                        }
-                    });
-                }
-            }
-        }).start();
     }
     private void stopRecording() {
         if (mediaRecorder != null) {
@@ -140,7 +126,11 @@ public class HomeActivity extends AppCompatActivity implements SensorEventListen
             mediaRecorder = null;
         }
     }
-    // Handle the result of the permission request
+    private void getCurrentLocation() {
+        String currentLocation = LocationUtils.getCurrentLocation(this);
+        Toast.makeText(this, "Current Location: " + currentLocation, Toast.LENGTH_SHORT).show();
+    }
+    // Handle the permissions request
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -151,20 +141,31 @@ public class HomeActivity extends AppCompatActivity implements SensorEventListen
                 // Permission denied, handle the denied state
             }
         }
+
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, get current location
+                getCurrentLocation();
+            } else {
+                // Permission denied, show a message or handle it gracefully
+                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
     // stop/start the detection system.
     private void startDetectionService() {
-
+        startRecording();
+        if(isAccelerometerSensorAvailable){
+            sensorManager.registerListener(this,accelerometerSensor,SensorManager.SENSOR_DELAY_NORMAL);
+        }
     }
     private void stopDetectionService() {
-
-    }
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        stopDetectionService();
         stopRecording();
+        if(isAccelerometerSensorAvailable){
+            sensorManager.unregisterListener(this);
+        }
     }
+
     // The system in the background will be
     // continuously monitoring the Sound decibel value and accelerometer for any Accident type impacts.
     @Override
@@ -180,32 +181,72 @@ public class HomeActivity extends AppCompatActivity implements SensorEventListen
         if (acceleration > THRESHOLD_ACCELEROMETER) {
             // Accident detected based on accelerometer
             Toast.makeText(this, "Accident detected!", Toast.LENGTH_SHORT).show();
+            showAlertAndNotifyUser();
+        }
 
-            // If it finds the App Notifies the User to verify if it’s a false alarm,
-            // if no action is done in 5 secs
-            // the Ambulance is assigned & notifies Hospital,
-            // Ambulance and Police about the accident with the location & User details.
+        // Calculate the sound level
+        if(mIsRecording)
+        {
+            int amplitude = mediaRecorder.getMaxAmplitude();
+            double amplitudeDb = 20 * Math.log10((double) Math.abs(amplitude));
+            String formattedAmplitudeDb = String.format("%.2f", amplitudeDb);
+            soundMeterText.setText("Amplitude: " + amplitude + " dB: " + formattedAmplitudeDb);
 
+            if(amplitudeDb > THRESHOLD_SOUND)
+            {
+                showAlertAndNotifyUser();
+            }
         }
     }
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+    // If it finds the App Notifies the User to verify if it’s a false alarm,
+    // if no action is done in 5 secs
+    // the Ambulance is assigned & notifies Hospital, Ambulance and Police about the accident
+    // with the location & User details.
+    private void showAlertAndNotifyUser() {
+        if (alertDialog != null && alertDialog.isShowing()) {
+            // Dialog is already showing, do nothing
+            return;
+        }
 
+        // Show alert dialog to verify if it's a false alarm
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Accident detected! Verify if it's a false alarm.")
+                .setCancelable(false)
+                .setPositiveButton("Notify Authorities", (dialog, id) -> {
+                    // User verifies and notifies authorities
+                    assignAmbulanceAndNotifyAuthorities();
+                    alertDialog.dismiss();
+                    alertDialog = null;
+                })
+                .setNegativeButton("False Alarm!", (dialog, id) -> {
+                    // User cancels, stop the notification and ambulance assignment
+                    mHandler.removeCallbacksAndMessages(null);
+                    alertDialog.dismiss();
+                    alertDialog = null;
+                });
+        alertDialog = builder.create();
+        alertDialog.show();
+
+        // Schedule ambulance assignment after 5 seconds if no action is taken
+        mHandler.postDelayed(() -> {
+            if (alertDialog != null && alertDialog.isShowing()) {
+                // No action taken, assign ambulance and notify authorities
+                assignAmbulanceAndNotifyAuthorities();
+                alertDialog.dismiss();
+                alertDialog = null;
+            }
+        }, NOTIFICATION_DELAY);
     }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if(isAccelerometerSensorAvailable){
-            sensorManager.registerListener(this,accelerometerSensor,SensorManager.SENSOR_DELAY_NORMAL);
-        }
-        startRecording();
-    }
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if(isAccelerometerSensorAvailable){
-            sensorManager.unregisterListener(this);
-        }
-        stopRecording();
+
+    private void assignAmbulanceAndNotifyAuthorities() {
+        // Notify Hospital, Ambulance, and Police about the accident with the location & User details
+        Toast.makeText(this, "Ambulance assigned! Notifying authorities...", Toast.LENGTH_SHORT).show();
+
+        // You can implement the logic to notify authorities here
+        // 1. Get the current location
+        // 2. Send notification to hospital, ambulance, and police with the location and user details
     }
 }

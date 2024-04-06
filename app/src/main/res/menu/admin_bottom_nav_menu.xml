@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/adminHospital"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/baseline_local_hospital_24"
+        android:title="Hospital" />
+    <item
+        android:id="@+id/adminAmbulance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/baseline_local_hospital_24"
+        android:title="Ambulance" />
+    <item
+        android:id="@+id/adminUsers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/baseline_people_24"
+        android:title="Users" />
+    <item
+        android:id="@+id/adminAccidents"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/baseline_car_crash_24"
+        android:title="Accidents" />
+    <item
+        android:id="@+id/adminProfile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/baseline_person_24"
+        android:title="Profile" />
+</menu>
