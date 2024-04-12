@@ -21,6 +21,9 @@
         android:theme="@style/Theme.AccidentDetectionAlert"
         tools:targetApi="31">
         <activity
+            android:name=".activities.UserActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.PoliceActivity"
             android:exported="false" />
         <activity

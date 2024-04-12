@@ -12,15 +12,15 @@
         android:icon="@drawable/baseline_phone_24"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="Emergency Contacts" />
+        android:title="Contacts" />
     <item
-        android:id="userHistory"
+        android:id="@+id/userHistory"
         android:icon="@drawable/baseline_history_24"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:title="History" />
     <item
-        android:id="userProfile"
+        android:id="@+id/userProfile"
         android:icon="@drawable/baseline_person_24"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
