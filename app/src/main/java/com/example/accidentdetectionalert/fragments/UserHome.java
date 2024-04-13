@@ -28,7 +28,6 @@ import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
-import com.example.accidentdetectionalert.R;
 import com.example.accidentdetectionalert.utils.LocationUtils;
 
 import java.io.File;
@@ -106,6 +105,7 @@ public class UserHome extends Fragment implements SensorEventListener {
         soundMeterText = view.findViewById(R.id.soundMeterText);
         detectionSwitch = view.findViewById(R.id.switchDetection);
 
+        requestLocationPermission();
         getCurrentLocation();
 
         sensorManager = (SensorManager) requireContext().getSystemService(Context.SENSOR_SERVICE);
@@ -181,6 +181,20 @@ public class UserHome extends Fragment implements SensorEventListener {
             mediaRecorder = null;
         }
     }
+    private void requestLocationPermission() {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED) {
+            // Permission already granted
+            // You can now perform your location-related tasks
+            getCurrentLocation();
+        } else {
+            // Request the permission from the user
+            requestPermissions(
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
     private void getCurrentLocation() {
         String currentLocation = LocationUtils.getCurrentLocation(getContext().getApplicationContext());
         Toast.makeText(requireContext(), "Current Location: " + currentLocation, Toast.LENGTH_SHORT).show();
@@ -192,8 +206,10 @@ public class UserHome extends Fragment implements SensorEventListener {
         if (requestCode == RECORD_AUDIO_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission granted, start recording or do other tasks that require this permission
+                startRecording();
             } else {
                 // Permission denied, handle the denied state
+                stopRecording();
             }
         }
 

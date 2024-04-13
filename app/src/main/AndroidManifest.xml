@@ -36,16 +36,7 @@
             android:name=".activities.AdminActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.NotificationActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.HistoryActivity"
-            android:exported="false" />
-        <activity
             android:name=".activities.HomeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.ProfileActivity"
             android:exported="false" />
         <activity
             android:name=".activities.SignUpActivity"
@@ -62,6 +53,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.google.android.geo.API_Key"
+            android:value="@string/googleApi"/>
+
     </application>
 
 </manifest>

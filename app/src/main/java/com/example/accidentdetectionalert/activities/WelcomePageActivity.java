@@ -31,7 +31,7 @@ public class WelcomePageActivity extends AppCompatActivity {
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(WelcomePageActivity.this, UserActivity.class);
+                Intent intent = new Intent(WelcomePageActivity.this, AmbulanceActivity.class);
                 WelcomePageActivity.this.startActivity(intent);
             }
         });
