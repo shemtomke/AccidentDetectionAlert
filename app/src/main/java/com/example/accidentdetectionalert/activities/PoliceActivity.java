@@ -44,9 +44,6 @@ public class PoliceActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.policeFrameLayout, fragment);
         fragmentTransaction.commit();
     }
-
     // Police is able to see to Today’s accident specifically or filter date wise to see previous ones.
-
     // Police will get a notification if it is assigned a Pickup.
-
 }

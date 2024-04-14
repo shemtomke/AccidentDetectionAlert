@@ -17,8 +17,8 @@ import com.example.accidentdetectionalert.fragments.UserHome;
 import com.example.accidentdetectionalert.fragments.UserProfile;
 
 public class UserActivity extends AppCompatActivity {
-//    SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", MODE_PRIVATE);
-//    int userId = sharedPreferences.getInt("userId", -1);
+    SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", MODE_PRIVATE);
+    int userId = sharedPreferences.getInt("userId", -1);
     ActivityUserBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,12 +26,6 @@ public class UserActivity extends AppCompatActivity {
         binding = ActivityUserBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         replaceFragment(new UserHome());
-
-//        if (userId != -1) {
-//            // User is logged in, userId contains the user's ID
-//        } else {
-//            // User is not logged in
-//        }
 
         binding.userBottomNavigationView.setOnItemSelectedListener(item -> {
             if (item.getItemId() == R.id.userHome) {

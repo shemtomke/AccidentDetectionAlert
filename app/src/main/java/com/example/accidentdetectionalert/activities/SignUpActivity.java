@@ -2,6 +2,7 @@ package com.example.accidentdetectionalert.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -47,10 +48,14 @@ public class SignUpActivity extends AppCompatActivity {
             return;
         }
 
-        User user = new User(fullName, email, password, phoneNumber, "Citizen");
+        // Creating normal users
+        User user = new User(fullName, email, password, phoneNumber, "citizen");
         databaseHelper.createUser(user);
 
         Toast.makeText(SignUpActivity.this, "User registered successfully", Toast.LENGTH_SHORT).show();
         finish();
+
+        Intent intent = new Intent(SignUpActivity.this, UserActivity.class);
+        startActivity(intent);
     }
 }

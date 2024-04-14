@@ -54,5 +54,4 @@ public class AdminActivity extends AppCompatActivity {
     // 3. View all the Users registered in this system.
 
     // 4. View all the Accidents and details about it, can be filtered date wise.
-
 }

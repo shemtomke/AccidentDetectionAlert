@@ -5,17 +5,23 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/userNameTextView_normal"
+    <TextView
+        android:id="@+id/notificationText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:padding="8dp"/>
+    <Spinner
+        android:id="@+id/notificationSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="8dp"
         android:textSize="18sp"
         android:textStyle="bold"
         app:backgroundTint="#E4DCDC"
-        android:text="Notification 1"
         android:textColor="@color/black">
-    </Button>
+    </Spinner>
 
 
 </LinearLayout>

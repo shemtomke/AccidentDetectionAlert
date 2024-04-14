@@ -23,7 +23,7 @@ public class WelcomePageActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(WelcomePageActivity.this, AdminActivity.class);
+                Intent intent = new Intent(WelcomePageActivity.this, LoginActivity.class);
                 WelcomePageActivity.this.startActivity(intent);
             }
         });
@@ -31,7 +31,7 @@ public class WelcomePageActivity extends AppCompatActivity {
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(WelcomePageActivity.this, AmbulanceActivity.class);
+                Intent intent = new Intent(WelcomePageActivity.this, SignUpActivity.class);
                 WelcomePageActivity.this.startActivity(intent);
             }
         });

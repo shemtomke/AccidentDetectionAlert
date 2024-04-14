@@ -48,10 +48,7 @@ public class AmbulanceActivity extends AppCompatActivity {
     // The driver can see the current accident location along with the User details,
     // the driver can directly navigate through Google Maps.
 
-
     // The Driver can update the status whether he has picked/dropped the User.
 
-
     // The driver will get a notification if it is assigned a Pickup.
-
 }
