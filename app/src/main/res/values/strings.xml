@@ -3,4 +3,21 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="googleApi">AIzaSyBaqi60X5NNSOb_afL4bR9bVokOIST9X3o</string>
+
+    <string-array name="role">
+        <item>ambulance</item>
+        <item>hospital</item>
+    </string-array>
+
+    <string-array name="AmbulanceStatus">
+        <item>None</item>
+        <item>Pickup</item>
+        <item>Drop</item>
+    </string-array>
+
+    <string-array name="HospitalStatus">
+        <item>None</item>
+        <item>Admit</item>
+    </string-array>
+
 </resources>

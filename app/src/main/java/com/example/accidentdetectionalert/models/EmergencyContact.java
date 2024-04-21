@@ -35,4 +35,10 @@ public class EmergencyContact {
         fullName = fullname;
         phoneContact = phoneNumber;
     }
+    public EmergencyContact(User _user, String fullname, String phoneNumber)
+    {
+        user = _user;
+        fullName = fullname;
+        phoneContact = phoneNumber;
+    }
 }

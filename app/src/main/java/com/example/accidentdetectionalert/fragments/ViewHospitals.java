@@ -1,14 +1,17 @@
 package com.example.accidentdetectionalert.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.example.accidentdetectionalert.R;
 import com.example.accidentdetectionalert.adapters.HospitalAdapter;
@@ -32,6 +35,7 @@ public class ViewHospitals extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    Button createHospitalButton;
 
     private RecyclerView recyclerView;
     private HospitalAdapter adapter;
@@ -74,6 +78,7 @@ public class ViewHospitals extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_view_hospitals, container, false);
 
+        createHospitalButton = view.findViewById(R.id.createHospitalButtonAdmin);
         recyclerView = view.findViewById(R.id.adminHospitalsRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -81,7 +86,21 @@ public class ViewHospitals extends Fragment {
         hospitalList = databaseHelper.getAllHospitals();
         adapter = new HospitalAdapter(hospitalList, getActivity());
         recyclerView.setAdapter(adapter);
+
+        createHospitalButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CreateHospital();
+            }
+        });
+
         // Inflate the layout for this fragment
         return view;
+    }
+    void CreateHospital()
+    {
+        Fragment createHospital = new CreateHospital();
+        FragmentTransaction fm = getActivity().getSupportFragmentManager().beginTransaction();
+        fm.replace(R.id.adminFrameLayout, createHospital).addToBackStack(null).commit();
     }
 }

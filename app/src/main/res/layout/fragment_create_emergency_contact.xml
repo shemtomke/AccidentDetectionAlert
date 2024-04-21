@@ -2,9 +2,10 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/createEmergencyContactFrameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.AddEmergencyContact">
+    tools:context=".fragments.CreateEmergencyContact">
 
     <!-- TODO: Update blank fragment layout -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -13,8 +14,8 @@
 
         <EditText
             android:id="@+id/contactFullName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="322dp"
+            android:layout_height="47dp"
             android:ems="10"
             android:inputType="text"
             android:text="Name"
@@ -27,8 +28,8 @@
 
         <EditText
             android:id="@+id/contactPhoneNumber"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="320dp"
+            android:layout_height="47dp"
             android:ems="10"
             android:inputType="phone"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -48,19 +49,32 @@
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.565" />
+            app:layout_constraintVertical_bias="0.56" />
+
+        <Button
+            android:id="@+id/deleteContactButton"
+            android:layout_width="170dp"
+            android:layout_height="48dp"
+            android:text="Delete Contact"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.693" />
 
         <Button
             android:id="@+id/createContactButton"
             android:layout_width="170dp"
             android:layout_height="48dp"
-            android:text="Add Contact"
+            android:text="Create Contact"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.448" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

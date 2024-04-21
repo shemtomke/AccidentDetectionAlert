@@ -39,6 +39,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE ambulance (id INTEGER PRIMARY KEY, user_id TEXT, hospital_id TEXT, location TEXT, " +
                 "FOREIGN KEY (user_id) REFERENCES user(id), " +
                 "FOREIGN KEY (hospital_id) REFERENCES hospital(id))");
+
+        db.execSQL("INSERT INTO user (id, fullname, email, password, phonenumber, Role) VALUES (0, 'admin', 'admin@gmail.com', 'admin', '0', 'admin')");
+        db.execSQL("INSERT INTO user (id, fullname, email, password, phonenumber, Role) VALUES (1, 'police', 'police@gmail.com', 'police', '911', 'police')");
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -51,7 +54,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("fullname", user.getFullName());
         values.put("email", user.getEmail());
         values.put("password", user.getPassword());
-        values.put("phonenumber", user.getPassword());
+        values.put("phonenumber", user.getPhoneNumber());
         values.put("role", user.getRole());
         db.insert("user", null, values);
         db.close();
@@ -65,6 +68,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("phonenumber", user.getPhoneNumber());
         values.put("role", user.getRole());
         db.update("user", values, "id=?", new String[]{String.valueOf(user.getUserId())});
+        db.close();
+    }
+    public void deleteUserById(int userId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete("user", "id=?", new String[]{String.valueOf(userId)});
         db.close();
     }
     public User getUser(int userId) {
@@ -130,7 +138,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         User user = accident.getUser();
         ContentValues values = new ContentValues();
-        values.put("id", accident.getAccidentId());
         values.put("user_id", user.getUserId());
         values.put("date_time", accident.getDateTime());
         values.put("location", accident.getLocation());
@@ -273,12 +280,63 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         User user = emergencyContact.getUser();
         ContentValues values = new ContentValues();
-        values.put("id", emergencyContact.getId());
         values.put("user_id", user.getUserId());
         values.put("name", emergencyContact.getFullName());
         values.put("phoneNumber", emergencyContact.getPhoneContact());
         db.insert("emergencyContact", null, values);
         db.close();
+    }
+    public void updateEmergencyContact(EmergencyContact emergencyContact) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("name", emergencyContact.getFullName());
+        values.put("phoneNumber", emergencyContact.getPhoneContact());
+
+        String whereClause = "id=?";
+        String[] whereArgs = {String.valueOf(emergencyContact.getId())};
+
+        db.update("emergencyContact", values, whereClause, whereArgs);
+        db.close();
+    }
+    public void deleteEmergencyContact(int emergencyContactId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        String whereClause = "id=?";
+        String[] whereArgs = {String.valueOf(emergencyContactId)};
+
+        db.delete("emergencyContact", whereClause, whereArgs);
+        db.close();
+    }
+    public EmergencyContact getEmergencyContactById(int emergencyContactId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] columns = {"id", "user_id", "name", "phoneNumber"};
+        String selection = "id=?";
+        String[] selectionArgs = {String.valueOf(emergencyContactId)};
+        Cursor cursor = db.query("emergencyContact", columns, selection, selectionArgs, null, null, null);
+
+        if (cursor != null) {
+            try {
+                int idIndex = cursor.getColumnIndex("id");
+                int userIdIndex = cursor.getColumnIndex("user_id");
+                int nameIndex = cursor.getColumnIndex("name");
+                int phoneNumberIndex = cursor.getColumnIndex("phoneNumber");
+
+                if (cursor.moveToFirst() && idIndex >= 0 && userIdIndex >= 0 && nameIndex >= 0 && phoneNumberIndex >= 0) {
+                    int userId = cursor.getInt(userIdIndex);
+                    String name = cursor.getString(nameIndex);
+                    String phoneNumber = cursor.getString(phoneNumberIndex);
+
+                    User user = getUser(userId);
+                    return new EmergencyContact(emergencyContactId, user, name, phoneNumber);
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+
+        db.close();
+        return null; // Return null if contact not found
     }
     public List<EmergencyContact> getEmergencyContactsByUserId(int userId) {
         List<EmergencyContact> emergencyContactList = new ArrayList<>();

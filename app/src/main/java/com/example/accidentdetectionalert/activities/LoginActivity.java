@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,14 +27,13 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
-
         emailEditText = findViewById(R.id.editLoginId);
         passwordEditText = findViewById(R.id.editLoginPassword);
         loginButton = findViewById(R.id.loginButton);
 
         databaseHelper = new DatabaseHelper(this);
 
+        sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -50,11 +50,20 @@ public class LoginActivity extends AppCompatActivity {
 
         if (user != null && user.getPassword().equals(password)) {
             // Login successful
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putInt("userId", user.getUserId());
-            editor.commit();
 
-            startAppropriateActivity(user.getRole());
+            try {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt("userId", user.getUserId());
+                editor.commit();
+            }catch (Exception e){
+                Log.i("Saving User ID Error", String.valueOf(e));
+            }
+
+            try {
+                startAppropriateActivity(user.getRole());
+            }catch (Exception e){
+                Log.i("Trying to load scene", String.valueOf(e));
+            }
 
             Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
         } else {

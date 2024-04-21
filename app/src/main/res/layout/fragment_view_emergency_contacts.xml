@@ -4,35 +4,50 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.ViewHospitalAmbulances">
+    tools:context=".fragments.ViewEmergencyContacts"
+    android:id="@+id/container_view_emergency_contact">
+
+    <!-- TODO: Update blank fragment layout -->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <androidx.appcompat.widget.SearchView
-            android:id="@+id/searchViewHospitalAmbulance"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
+            android:id="@+id/searchViewUserEmergencyContacts"
+            android:layout_width="296dp"
+            android:layout_height="45dp"
             android:layout_margin="8dp"
             android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.075"
+            app:layout_constraintHorizontal_bias="0.373"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:queryHint="Search Hospital">
+            app:queryHint="Search Emergency Contact">
 
         </androidx.appcompat.widget.SearchView>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/hospitalAmbulanceListRecyclerView"
+            android:id="@+id/emergencyContactsListRecyclerView"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginBottom="100dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/searchViewHospitalAmbulance">
+            app:layout_constraintTop_toBottomOf="@+id/searchViewUserEmergencyContacts">
 
         </androidx.recyclerview.widget.RecyclerView>
+
+        <Button
+            android:id="@+id/createEmergencyContactButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create Emergency Contact"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/emergencyContactsListRecyclerView" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </FrameLayout>
