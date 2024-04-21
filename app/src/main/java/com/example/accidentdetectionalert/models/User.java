@@ -52,6 +52,14 @@ public class User {
         fullName = _fullName;
         role = _role;
     }
+    public User(int id, String _fullName, String _email, String phonenumber,  String _role)
+    {
+        userId = id;
+        email = _email;
+        phoneNumber = phonenumber;
+        fullName = _fullName;
+        role = _role;
+    }
     public User(String _fullName, String _email, String _password, String phonenumber, String _role)
     {
         email = _email;

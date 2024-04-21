@@ -1,9 +1,7 @@
 package com.example.accidentdetectionalert.fragments;
 
-import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -12,19 +10,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.example.accidentdetectionalert.R;
 import com.example.accidentdetectionalert.database.DatabaseHelper;
+import com.example.accidentdetectionalert.models.Hospital;
 import com.example.accidentdetectionalert.models.User;
 
 public class CreateHospital extends Fragment {
     Button createHospitalButton, deleteHospitalButton, updateHospitalButton;
+    ImageButton backButton;
     EditText hospitalNameText, emailText, phoneText, passwordText;
     DatabaseHelper databaseHelper;
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -38,16 +37,7 @@ public class CreateHospital extends Fragment {
         createHospitalButton = view.findViewById(R.id.createHospitalButton);
         updateHospitalButton = view.findViewById(R.id.updateHospitalButton);
         deleteHospitalButton = view.findViewById(R.id.deleteHospitalButton);
-
-        Toolbar toolbar = view.findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.drawable.baseline_arrow_back_24); // Set back button icon
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Handle back button click (e.g., go back to previous fragment)
-                requireActivity().onBackPressed();
-            }
-        });
+        backButton = view.findViewById(R.id.backButtonCreateHospital);
 
         databaseHelper = new DatabaseHelper(requireContext());
         createHospitalButton.setOnClickListener(new View.OnClickListener() {
@@ -68,6 +58,12 @@ public class CreateHospital extends Fragment {
                 deleteHospital();
             }
         });
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GoToViewHospitals();
+            }
+        });
 
         // Inflate the layout for this fragment
         return view;
@@ -86,8 +82,9 @@ public class CreateHospital extends Fragment {
         }
 
         User user = new User(hospitalName, email, password, phoneNumber, "hospital");
+        Hospital hospital = new Hospital(user);
         try {
-            databaseHelper.createUser(user);
+            databaseHelper.createHospital(hospital);
             Toast.makeText(requireContext(), "Created hospital successfully!", Toast.LENGTH_SHORT).show();
             GoToViewHospitals();
         }catch (Exception e)

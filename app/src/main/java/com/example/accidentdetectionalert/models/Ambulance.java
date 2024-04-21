@@ -41,4 +41,10 @@ public class Ambulance {
         hospital = _hospital;
         location = _location;
     }
+    public Ambulance(User _user, Hospital _hospital, String _location)
+    {
+        user = _user;
+        hospital = _hospital;
+        location = _location;
+    }
 }

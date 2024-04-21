@@ -37,7 +37,6 @@ public class EmergencyContactsAdapter extends RecyclerView.Adapter<EmergencyCont
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_item, parent, false);
         return new EmergencyContactsAdapter.ViewHolder(view);
     }
-
     @Override
     public void onBindViewHolder(@NonNull EmergencyContactsAdapter.ViewHolder holder, int position) {
         EmergencyContact emergencyContact = emergencyContactsList.get(position);
@@ -54,16 +53,14 @@ public class EmergencyContactsAdapter extends RecyclerView.Adapter<EmergencyCont
                 createEmergencyPage.setArguments(args);
 
                 FragmentTransaction fm = ((AppCompatActivity)context).getSupportFragmentManager().beginTransaction();
-                fm.replace(R.id.container_view_emergency_contact, createEmergencyPage).commit();
+                fm.replace(R.id.userFrameLayout, createEmergencyPage).addToBackStack(null).commit();
             }
         });
     }
-
     @Override
     public int getItemCount() {
         return emergencyContactsList.size();
     }
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView userFullName;
         public TextView userPhoneNumber;

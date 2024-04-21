@@ -1,5 +1,7 @@
 package com.example.accidentdetectionalert.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -14,31 +16,35 @@ import com.example.accidentdetectionalert.R;
 import com.example.accidentdetectionalert.adapters.AccidentAdapter;
 import com.example.accidentdetectionalert.database.DatabaseHelper;
 import com.example.accidentdetectionalert.models.Accident;
+import com.example.accidentdetectionalert.models.User;
 
 import java.util.List;
 
-public class ViewAllAccidents extends Fragment {
+public class ViewAccidents extends Fragment {
     private RecyclerView recyclerView;
     private AccidentAdapter adapter;
     private List<Accident> accidentList;
     private DatabaseHelper databaseHelper;
-    // Add a boolean flag to determine if the adapter should show all accidents or only those assigned to the hospital
-    private boolean showAllAccidents;
+    private SharedPreferences sharedPreferences;
+    int userId;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_view_all_accidents, container, false);
+        View view = inflater.inflate(R.layout.fragment_view_accidents, container, false);
 
         recyclerView = view.findViewById(R.id.adminAccidentsRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         databaseHelper = new DatabaseHelper(getActivity());
-        if (showAllAccidents) {
+        sharedPreferences = requireActivity().getApplicationContext().getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
+        userId = sharedPreferences.getInt("userId", -1);
+
+        User user = databaseHelper.getUser(userId);
+
+        if (user.getRole().equals("admin")) {
             accidentList = databaseHelper.getAllAccidentsWithUserDetails();
-        } else {
-            // Assuming you have a way to get the current user's hospital ID
-            String hospitalId = getCurrentUserHospitalId();
-            accidentList = databaseHelper.getAccidentsForHospital(hospitalId);
+        } else if(user.getRole().equals("hospital")) {
+            accidentList = databaseHelper.getAccidentsForHospital(userId);
         }
 
         adapter = new AccidentAdapter(accidentList, getActivity());
@@ -46,9 +52,5 @@ public class ViewAllAccidents extends Fragment {
 
         // Inflate the layout for this fragment
         return view;
-    }
-    private String getCurrentUserHospitalId() {
-        // Implement your logic to get the current user's hospital ID
-        return "your_hospital_id_here";
     }
 }

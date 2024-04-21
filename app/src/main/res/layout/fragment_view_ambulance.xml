@@ -34,5 +34,17 @@
             app:layout_constraintTop_toBottomOf="@+id/searchViewAmbulance">
 
         </androidx.recyclerview.widget.RecyclerView>
+
+        <Button
+            android:id="@+id/createAmbualnceAdmin"
+            android:layout_width="50dp"
+            android:layout_height="41dp"
+            android:text="+"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.619"
+            app:layout_constraintStart_toEndOf="@+id/searchViewAmbulance"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.011" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

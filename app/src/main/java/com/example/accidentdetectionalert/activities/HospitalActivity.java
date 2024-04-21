@@ -9,16 +9,11 @@ import android.os.Bundle;
 
 import com.example.accidentdetectionalert.R;
 import com.example.accidentdetectionalert.databinding.ActivityHospitalBinding;
-import com.example.accidentdetectionalert.databinding.ActivityPoliceBinding;
 import com.example.accidentdetectionalert.fragments.HospitalHome;
 import com.example.accidentdetectionalert.fragments.Notification;
 import com.example.accidentdetectionalert.fragments.UserProfile;
-import com.example.accidentdetectionalert.fragments.ViewAllAccidents;
+import com.example.accidentdetectionalert.fragments.ViewAccidents;
 import com.example.accidentdetectionalert.fragments.ViewAmbulance;
-import com.example.accidentdetectionalert.fragments.ViewHospitalAccidents;
-import com.example.accidentdetectionalert.fragments.ViewHospitalAmbulances;
-import com.example.accidentdetectionalert.fragments.ViewHospitals;
-import com.example.accidentdetectionalert.fragments.ViewUsers;
 
 public class HospitalActivity extends AppCompatActivity {
     ActivityHospitalBinding binding;
@@ -33,9 +28,9 @@ public class HospitalActivity extends AppCompatActivity {
             if (item.getItemId() == R.id.hospitalHome) {
                 replaceFragment(new HospitalHome());
             } else if (item.getItemId() == R.id.hospitalAmbulance) {
-                replaceFragment(new ViewHospitalAmbulances());
+                replaceFragment(new ViewAmbulance());
             } else if (item.getItemId() == R.id.hospitalAccidents) {
-                replaceFragment(new ViewHospitalAccidents());
+                replaceFragment(new ViewAccidents());
             } else if (item.getItemId() == R.id.hospitalNotifications) {
                 replaceFragment(new Notification());
             } else if (item.getItemId() == R.id.hospitalProfile) {

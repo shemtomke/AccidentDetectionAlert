@@ -8,9 +8,8 @@ import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
 
 import com.example.accidentdetectionalert.R;
-import com.example.accidentdetectionalert.databinding.ActivityAdminBinding;
 import com.example.accidentdetectionalert.fragments.UserProfile;
-import com.example.accidentdetectionalert.fragments.ViewAllAccidents;
+import com.example.accidentdetectionalert.fragments.ViewAccidents;
 import com.example.accidentdetectionalert.fragments.ViewAmbulance;
 import com.example.accidentdetectionalert.fragments.ViewHospitals;
 import com.example.accidentdetectionalert.fragments.ViewUsers;
@@ -32,7 +31,7 @@ public class AdminActivity extends AppCompatActivity {
             } else if (item.getItemId() == R.id.adminUsers) {
                 replaceFragment(new ViewUsers());
             } else if (item.getItemId() == R.id.adminAccidents) {
-                replaceFragment(new ViewAllAccidents());
+                replaceFragment(new ViewAccidents());
             } else if (item.getItemId() == R.id.adminProfile) {
                 replaceFragment(new UserProfile());
             }

@@ -114,7 +114,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM user", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM user WHERE Role = 'citizen'", null);
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 User user = new User(
@@ -122,8 +122,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cursor.getString(1),
                         cursor.getString(2),
                         cursor.getString(3),
-                        cursor.getString(4),
-                        cursor.getString(5)
+                        cursor.getString(4)
                 );
                 userList.add(user);
             } while (cursor.moveToNext());
@@ -198,7 +197,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return accidentList;
     }
-    public List<Accident> getAccidentsForHospital(String hospitalId) {
+    public List<Accident> getAccidentsForHospital(int hospitalId) {
         List<Accident> accidents = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT accident.id AS accident_id, accident.user_id, accident.date_time, accident.location, accident.status, " +
@@ -207,7 +206,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "INNER JOIN user ON accident.user_id = user.id " +
                 "INNER JOIN hospital ON user.id = hospital.user_id " +
                 "WHERE hospital.id = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{hospitalId});
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(hospitalId)});
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 int accidentIdIndex = cursor.getColumnIndex("accident_id");
@@ -411,17 +410,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int userIdIndex = cursor.getColumnIndex("user_id");
             int locationIndex = cursor.getColumnIndex("location");
             while (cursor.moveToNext()) {
-                int hospitalId = cursor.getInt(idIndex);
-                int userId = cursor.getInt(userIdIndex);
-                String location = cursor.getString(locationIndex);
-
-                // Retrieve the user object associated with the hospital
-                User user = getUser(userId);
-                if (user != null) {
+                if (idIndex >= 0 && userIdIndex >= 0 && locationIndex >= 0) {
+                    int hospitalId = cursor.getInt(idIndex);
+                    int userId = cursor.getInt(userIdIndex);
+                    String location = cursor.getString(locationIndex);
+                    User user = getUser(userId);
                     hospitals.add(new Hospital(hospitalId, user, location));
-                } else {
-                    // Handle case where user is not found
-                    // You can throw an exception, log an error, or handle it in another way
                 }
             }
             cursor.close();
@@ -479,6 +473,60 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("location", ambulance.getLocation());
         db.insert("ambulance", null, values);
         db.close();
+    }
+    public void updateAmbulance(Ambulance ambulance) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        User user = ambulance.getUser();
+        Hospital hospital = ambulance.getHospital();
+
+        ContentValues values = new ContentValues();
+        values.put("user_id", user.getUserId());
+        values.put("hospital_id", hospital.getHospitalId());
+        values.put("location", ambulance.getLocation());
+
+        String selection = "id=?";
+        String[] selectionArgs = {String.valueOf(ambulance.getAmbulanceId())};
+
+        db.update("ambulance", values, selection, selectionArgs);
+        db.close();
+    }
+
+    public void deleteAmbulance(int ambulanceId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String selection = "id=?";
+        String[] selectionArgs = {String.valueOf(ambulanceId)};
+        db.delete("ambulance", selection, selectionArgs);
+        db.close();
+    }
+    public List<Ambulance> getAllAmbulances() {
+        List<Ambulance> ambulanceList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM ambulance", null);
+        if (cursor != null && cursor.moveToFirst()) {
+            int idIndex = cursor.getColumnIndex("id");
+            int userIdIndex = cursor.getColumnIndex("user_id");
+            int hospitalIdIndex = cursor.getColumnIndex("hospital_id");
+            int locationIndex = cursor.getColumnIndex("location");
+
+            do {
+                int id = cursor.getInt(idIndex);
+                int userId = cursor.getInt(userIdIndex);
+                int hospitalId = cursor.getInt(hospitalIdIndex);
+                String location = cursor.getString(locationIndex);
+
+                // Assuming you have methods to get user and hospital based on their IDs
+                User user = getUser(userId);
+                Hospital hospital = getHospitalById(hospitalId);
+
+                if (user != null && hospital != null) {
+                    Ambulance ambulance = new Ambulance(id, user, hospital, location);
+                    ambulanceList.add(ambulance);
+                }
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        db.close();
+        return ambulanceList;
     }
     public List<Ambulance> getAmbulancesForHospital(int hospitalId) {
         List<Ambulance> ambulanceList = new ArrayList<>();

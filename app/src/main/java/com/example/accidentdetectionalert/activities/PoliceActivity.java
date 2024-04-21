@@ -8,15 +8,9 @@ import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
 
 import com.example.accidentdetectionalert.R;
-import com.example.accidentdetectionalert.databinding.ActivityAdminBinding;
-import com.example.accidentdetectionalert.databinding.ActivityPoliceBinding;
 import com.example.accidentdetectionalert.fragments.Notification;
 import com.example.accidentdetectionalert.fragments.PoliceHome;
 import com.example.accidentdetectionalert.fragments.UserProfile;
-import com.example.accidentdetectionalert.fragments.ViewAllAccidents;
-import com.example.accidentdetectionalert.fragments.ViewAmbulance;
-import com.example.accidentdetectionalert.fragments.ViewHospitals;
-import com.example.accidentdetectionalert.fragments.ViewUsers;
 
 public class PoliceActivity extends AppCompatActivity {
     ActivityPoliceBinding binding;

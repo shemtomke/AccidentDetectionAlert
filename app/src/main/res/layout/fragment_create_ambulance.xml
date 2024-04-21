@@ -12,6 +12,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ImageButton
+            android:id="@+id/backButtonCreateAmbulance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_arrow_back_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.044"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
         <Spinner
             android:id="@+id/hospitalsSpinnerAmbulance"
             android:layout_width="314dp"
@@ -45,7 +57,7 @@
             app:layout_constraintHorizontal_bias="0.287"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.628" />
+            app:layout_constraintVertical_bias="0.627" />
 
         <TextView
             android:id="@+id/textView11"
