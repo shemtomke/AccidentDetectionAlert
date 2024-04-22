@@ -28,7 +28,6 @@ public class ViewAmbulance extends Fragment {
     private RecyclerView recyclerView;
     Button createAmbulanceButton;
     private AmbulanceAdapater adapter;
-    private List<Ambulance> ambulanceList;
     private DatabaseHelper databaseHelper;
     private SharedPreferences sharedPreferences;
     int userId;

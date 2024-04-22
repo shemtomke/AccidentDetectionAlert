@@ -62,6 +62,7 @@ public class CreateAmbulance extends Fragment {
         user = databaseHelper.getUser(userId);
 
         populateSpinner();
+        hospitalsSpinner.setEnabled(false);
         checkBoxStatus();
 
         createHospitalButton.setOnClickListener(new View.OnClickListener() {
@@ -101,12 +102,14 @@ public class CreateAmbulance extends Fragment {
             hospitalId = selectedHospital.getHospitalId();
         }
 
-        Ambulance newAmbulance = new Ambulance(ambulanceUser, new Hospital(hospitalId), "Ambulance Location");
-
         if (fullName.isEmpty() || phoneNumber.isEmpty() || email.isEmpty() || password.isEmpty()) {
             Toast.makeText(requireContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        databaseHelper.createUser(ambulanceUser);
+
+        Ambulance newAmbulance = new Ambulance(ambulanceUser, new Hospital(hospitalId), "Ambulance Location");
 
         try {
             databaseHelper.createAmbulance(newAmbulance);

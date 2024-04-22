@@ -1,66 +1,75 @@
 package com.example.accidentdetectionalert.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
 import com.example.accidentdetectionalert.R;
+import com.example.accidentdetectionalert.adapters.AccidentAdapter;
+import com.example.accidentdetectionalert.adapters.EmergencyContactsAdapter;
+import com.example.accidentdetectionalert.database.DatabaseHelper;
+import com.example.accidentdetectionalert.models.Accident;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link PoliceHome#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class PoliceHome extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public PoliceHome() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment PoliceHome.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static PoliceHome newInstance(String param1, String param2) {
-        PoliceHome fragment = new PoliceHome();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
+    SearchView searchView;
+    RecyclerView accidentsRecyclerView;
+    DatabaseHelper databaseHelper;
+    AccidentAdapter accidentAdapter;
+    List<Accident> allAccidents; // Store all accidents here
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_police_home, container, false);
+
+        accidentsRecyclerView = view.findViewById(R.id.accidentLocationPoliceListRecyclerView);
+        searchView = view.findViewById(R.id.searchAccidents);
+        accidentsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        databaseHelper = new DatabaseHelper(requireContext());
+        allAccidents = databaseHelper.getAllAccidentsWithUserDetails(true); // Get all accidents
+
+        // Initialize adapter and set it to RecyclerView
+        accidentAdapter = new AccidentAdapter(allAccidents, getActivity());
+        accidentsRecyclerView.setAdapter(accidentAdapter);
+
+        // Set up SearchView listener
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // Filter the list based on the search query
+                filter(newText);
+                return true;
+            }
+        });
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_police_home, container, false);
+        return view;
+    }
+    private void filter(String searchText) {
+        List<Accident> filteredList = new ArrayList<>();
+        for (Accident accident : allAccidents) {
+            // Filter logic (you can customize this based on your requirements)
+            if (accident.getLocation().toLowerCase().contains(searchText.toLowerCase())) {
+                filteredList.add(accident);
+            }
+        }
+        // Update RecyclerView with the filtered list
+        accidentAdapter.filterList(filteredList);
     }
 }

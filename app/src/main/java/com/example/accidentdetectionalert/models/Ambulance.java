@@ -5,7 +5,6 @@ public class Ambulance {
     private User user;
     private Hospital hospital;
     private String location;
-    private boolean isAvailable;
 
     public int getAmbulanceId() {
         return ambulanceId;
@@ -19,17 +18,11 @@ public class Ambulance {
     public String getLocation() {
         return location;
     }
-    public boolean isAvailable() {
-        return isAvailable;
-    }
     public void setLocation(String location) {
         this.location = location;
     }
     public void setAmbulanceId(int ambulanceId) {
         this.ambulanceId = ambulanceId;
-    }
-    public void setAvailable(boolean available) {
-        isAvailable = available;
     }
     public void setUser(User user) {
         this.user = user;

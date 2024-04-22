@@ -11,12 +11,14 @@ import androidx.annotation.Nullable;
 import com.example.accidentdetectionalert.models.Accident;
 import com.example.accidentdetectionalert.models.Ambulance;
 import com.example.accidentdetectionalert.models.EmergencyContact;
+import com.example.accidentdetectionalert.models.HistoryAlert;
 import com.example.accidentdetectionalert.models.Hospital;
 import com.example.accidentdetectionalert.models.Police;
 import com.example.accidentdetectionalert.models.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "detection_system.db";
@@ -39,6 +41,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE ambulance (id INTEGER PRIMARY KEY, user_id TEXT, hospital_id TEXT, location TEXT, " +
                 "FOREIGN KEY (user_id) REFERENCES user(id), " +
                 "FOREIGN KEY (hospital_id) REFERENCES hospital(id))");
+        db.execSQL("CREATE TABLE ambulance_assignment (id INTEGER PRIMARY KEY, accident_id INTEGER, ambulance_id INTEGER, " +
+                "FOREIGN KEY (accident_id) REFERENCES accident(id), " +
+                "FOREIGN KEY (ambulance_id) REFERENCES ambulance(id))");
+        db.execSQL("CREATE TABLE history_alert (id INTEGER PRIMARY KEY, user_id TEXT, date_time TEXT, status TEXT, " +
+                "FOREIGN KEY (user_id) REFERENCES user(id))");
 
         db.execSQL("INSERT INTO user (id, fullname, email, password, phonenumber, Role) VALUES (0, 'admin', 'admin@gmail.com', 'admin', '0', 'admin')");
         db.execSQL("INSERT INTO user (id, fullname, email, password, phonenumber, Role) VALUES (1, 'police', 'police@gmail.com', 'police', '911', 'police')");
@@ -46,6 +53,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+    }
+    // History
+    public void createHistoryAlert(HistoryAlert historyAlert) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("user_id", historyAlert.getUser().getUserId());
+        values.put("date_time", historyAlert.getDateTime());
+        values.put("status", historyAlert.getStatus());
+        db.insert("history_alert", null, values);
+        db.close();
+    }
+    public List<HistoryAlert> getHistoryAlertsForUser(int userId) {
+        List<HistoryAlert> historyAlerts = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] columns = {"id", "user_id", "date_time", "status"};
+        String selection = "user_id = ?";
+        String[] selectionArgs = {String.valueOf(userId)};
+        Cursor cursor = db.query("history_alert", columns, selection, selectionArgs, null, null, null);
+        if (cursor.moveToFirst()) {
+            int idIndex = cursor.getColumnIndex("id");
+            int userIdIndex = cursor.getColumnIndex("user_id");
+            int dateTimeIndex = cursor.getColumnIndex("date_time");
+            int statusIndex = cursor.getColumnIndex("status");
+            do {
+                int id = cursor.getInt(idIndex);
+                String dateTime = cursor.getString(dateTimeIndex);
+                String status = cursor.getString(statusIndex);
+                User user = getUser(cursor.getInt(userIdIndex));
+                HistoryAlert historyAlert = new HistoryAlert(id, user, dateTime, status);
+                historyAlerts.add(historyAlert);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return historyAlerts;
     }
     // User
     public void createUser(User user) {
@@ -151,13 +193,54 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.update("accident", values, "id = ?", new String[]{accidentId});
         db.close();
     }
-    public List<Accident> getAllAccidentsWithUserDetails() {
+    public Ambulance assignAmbulance(int accidentId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // Check if an ambulance is already assigned to the accident
+        Cursor cursor = db.rawQuery("SELECT ambulance_id FROM ambulance_assignment WHERE accident_id = ?", new String[]{String.valueOf(accidentId)});
+        if (cursor.moveToFirst()) {
+            int assignedAmbulanceIdColumnIndex = cursor.getColumnIndex("ambulance_id");
+            if (assignedAmbulanceIdColumnIndex != -1) {
+                int assignedAmbulanceId = cursor.getInt(assignedAmbulanceIdColumnIndex);
+                cursor.close();
+                db.close();
+                return getAmbulanceById(assignedAmbulanceId);
+            } else {
+                cursor.close();
+                db.close();
+                return null; // Handle column not found
+            }
+        }
+        cursor.close();
+
+        // If no ambulance is assigned, assign a random one
+        List<Ambulance> ambulances = getAllAmbulances();
+        if (ambulances.isEmpty()) {
+            db.close();
+            return null; // No ambulances available
+        }
+        Random random = new Random();
+        int randomIndex = random.nextInt(ambulances.size());
+        Ambulance randomAmbulance = ambulances.get(randomIndex);
+
+        // Update the assignment table
+        ContentValues values = new ContentValues();
+        values.put("accident_id", accidentId);
+        values.put("ambulance_id", randomAmbulance.getAmbulanceId());
+        db.insert("ambulance_assignment", null, values);
+
+        db.close();
+        return randomAmbulance;
+    }
+    public List<Accident> getAllAccidentsWithUserDetails(boolean latestFirst) {
         List<Accident> accidentList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
+        String sortOrder = latestFirst ? "DESC" : "ASC";
         String query = "SELECT accident.id AS accident_id, accident.user_id, accident.date_time, accident.location, " +
                 "user.fullname, user.email, user.password, user.phonenumber, user.Role " +
                 "FROM accident " +
-                "INNER JOIN user ON accident.user_id = user.id";
+                "INNER JOIN user ON accident.user_id = user.id " +
+                "ORDER BY accident.date_time " + sortOrder;
         Cursor cursor = db.rawQuery(query, null);
         if (cursor != null && cursor.moveToFirst()) {
             do {
@@ -188,7 +271,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             cursor.getString(dateTimeIndex),
                             cursor.getString(locationIndex),
                             cursor.getString(statusIndex)
-                            );
+                    );
                     accidentList.add(accident);
                 }
             } while (cursor.moveToNext());
@@ -367,10 +450,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Hospital
     public void createHospital(Hospital hospital) {
         SQLiteDatabase db = this.getWritableDatabase();
-
         User user = hospital.getUser();
         ContentValues values = new ContentValues();
-        values.put("id", hospital.getHospitalId());
         values.put("user_id", user.getUserId());
         values.put("location", hospital.getLocation());
         db.insert("hospital", null, values);
@@ -426,10 +507,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Police
     public void createPolice(Police police) {
         SQLiteDatabase db = this.getWritableDatabase();
-
         User user = police.getUser();
         ContentValues values = new ContentValues();
-        values.put("id", police.getPoliceId());
         values.put("user_id", user.getUserId());
         values.put("location", police.getLocation());
         db.insert("police", null, values);
@@ -467,7 +546,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Hospital hospital = ambulance.getHospital();
 
         ContentValues values = new ContentValues();
-        values.put("id", ambulance.getAmbulanceId());
         values.put("user_id", user.getUserId());
         values.put("hospital_id", hospital.getHospitalId());
         values.put("location", ambulance.getLocation());
@@ -497,6 +575,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String[] selectionArgs = {String.valueOf(ambulanceId)};
         db.delete("ambulance", selection, selectionArgs);
         db.close();
+    }
+    public Ambulance getAmbulanceById(int ambulanceId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query("ambulance", new String[]{"ambulanceId", "location", "isAvailable"}, "ambulanceId=?",
+                new String[]{String.valueOf(ambulanceId)}, null, null, null, null);
+
+        Ambulance ambulance = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            int ambulanceIdIndex = cursor.getColumnIndex("ambulanceId");
+            int locationIndex = cursor.getColumnIndex("location");
+
+            int _ambulanceId = cursor.getInt(ambulanceIdIndex);
+            String _location = cursor.getString(locationIndex);
+
+            ambulance = new Ambulance(_ambulanceId, null, null, _location);
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+        db.close();
+
+        return ambulance;
     }
     public List<Ambulance> getAllAmbulances() {
         List<Ambulance> ambulanceList = new ArrayList<>();

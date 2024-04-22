@@ -27,31 +27,4 @@
         android:textSize="14sp"
         android:padding="8dp"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Space
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"/>
-
-        <Button
-            android:id="@+id/updateUserButton_update"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Update"/>
-
-        <Space
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"/>
-
-        <Button
-            android:id="@+id/deleteUserButton_update"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Delete"/>
-
-    </LinearLayout>
-
 </LinearLayout>

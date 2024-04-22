@@ -12,14 +12,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.accidentdetectionalert.R;
 import com.example.accidentdetectionalert.models.Accident;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AccidentAdapter extends RecyclerView.Adapter<AccidentAdapter.ViewHolder>{
     private List<Accident> accidentList;
+    private List<Accident> filteredList; // Add a filtered list
     private Context context;
 
     public AccidentAdapter(List<Accident> accidentList, Context context) {
         this.accidentList = accidentList;
+        this.filteredList = new ArrayList<>(accidentList); // Initialize filtered list with all accidents
         this.context = context;
     }
 
@@ -32,7 +35,8 @@ public class AccidentAdapter extends RecyclerView.Adapter<AccidentAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Accident accident = accidentList.get(position);
+        //Accident accident = accidentList.get(position);
+        Accident accident = filteredList.get(position);
         holder.accidentIdTextView.setText("Accident ID: " + accident.getAccidentId());
         holder.dateTimeTextView.setText("Date Time: " + accident.getDateTime());
         holder.locationTextView.setText("Location: " + accident.getLocation());
@@ -41,7 +45,11 @@ public class AccidentAdapter extends RecyclerView.Adapter<AccidentAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return accidentList.size();
+        return filteredList.size();
+    }
+    public void filterList(List<Accident> filteredList) {
+        this.filteredList = filteredList;
+        notifyDataSetChanged(); // Notify adapter of data change
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

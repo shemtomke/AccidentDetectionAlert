@@ -16,7 +16,7 @@ import com.example.accidentdetectionalert.database.DatabaseHelper;
 import com.example.accidentdetectionalert.models.User;
 
 public class SignUpActivity extends AppCompatActivity {
-    Button signUpButton;
+    Button signUpButton, loginButton;
     EditText fullNameText, emailText, passwordText, phoneNumberText;
     DatabaseHelper databaseHelper;
     @Override
@@ -29,6 +29,7 @@ public class SignUpActivity extends AppCompatActivity {
         passwordText = findViewById(R.id.editPasswordUser);
         phoneNumberText = findViewById(R.id.editPhoneUser);
         signUpButton = findViewById(R.id.signUpButton);
+        loginButton = findViewById(R.id.loginButtonSignUp);
 
         databaseHelper = new DatabaseHelper(this);
         signUpButton.setOnClickListener(new View.OnClickListener() {
@@ -37,6 +38,16 @@ public class SignUpActivity extends AppCompatActivity {
                 SignUp();
             }
         });
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Login();
+            }
+        });
+    }
+    void Login(){
+        Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
+        startActivity(intent);
     }
     public void SignUp()
     {

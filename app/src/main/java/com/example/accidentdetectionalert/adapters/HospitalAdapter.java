@@ -48,16 +48,6 @@ public class HospitalAdapter extends RecyclerView.Adapter<HospitalAdapter.ViewHo
         holder.hospitalLocationTextView.setText(hospital.getLocation());
         holder.hospitalPhoneTextView.setText(hospital.getUser().getPhoneNumber());
 
-        holder.updateButton.setOnClickListener(v -> {
-            // Handle update button click here
-            Toast.makeText(context, "Update clicked for " + hospital.getUser().getFullName(), Toast.LENGTH_SHORT).show();
-        });
-
-        holder.deleteButton.setOnClickListener(v -> {
-            // Handle delete button click here
-            Toast.makeText(context, "Delete clicked for " + hospital.getUser().getFullName(), Toast.LENGTH_SHORT).show();
-        });
-
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,16 +72,12 @@ public class HospitalAdapter extends RecyclerView.Adapter<HospitalAdapter.ViewHo
         public TextView hospitalNameTextView;
         public TextView hospitalLocationTextView;
         public TextView hospitalPhoneTextView;
-        public Button updateButton;
-        public Button deleteButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             hospitalNameTextView = itemView.findViewById(R.id.userNameTextView_update);
             hospitalLocationTextView = itemView.findViewById(R.id.userLocationTextView_update);
             hospitalPhoneTextView = itemView.findViewById(R.id.userPhoneNumberTextView_update);
-            updateButton = itemView.findViewById(R.id.updateUserButton_update);
-            deleteButton = itemView.findViewById(R.id.deleteUserButton_update);
         }
     }
 }

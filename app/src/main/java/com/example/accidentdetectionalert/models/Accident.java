@@ -34,6 +34,12 @@ public class Accident {
         location = _location;
         status = _status;
     }
+    public Accident(User _user, String _dateTime, String _location)
+    {
+        user = _user;
+        dateTime = _dateTime;
+        location = _location;
+    }
     public Accident(int _accidentId, String _dateTime, String _location, String _status)
     {
         accidentId = _accidentId;

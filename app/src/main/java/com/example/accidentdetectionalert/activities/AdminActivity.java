@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
 
 import com.example.accidentdetectionalert.R;
+import com.example.accidentdetectionalert.databinding.ActivityAdminBinding;
 import com.example.accidentdetectionalert.fragments.UserProfile;
 import com.example.accidentdetectionalert.fragments.ViewAccidents;
 import com.example.accidentdetectionalert.fragments.ViewAmbulance;

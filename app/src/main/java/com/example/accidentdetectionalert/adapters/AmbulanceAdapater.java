@@ -1,7 +1,11 @@
 package com.example.accidentdetectionalert.adapters;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +17,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.example.accidentdetectionalert.R;
+import com.example.accidentdetectionalert.fragments.CreateAmbulance;
+import com.example.accidentdetectionalert.fragments.CreateHospital;
 import com.example.accidentdetectionalert.models.Ambulance;
 import com.example.accidentdetectionalert.models.Hospital;
 
@@ -40,15 +46,19 @@ public class AmbulanceAdapater extends RecyclerView.Adapter<AmbulanceAdapater.Vi
         holder.ambulanceLocationTextView.setText(ambulance.getLocation());
         holder.ambulancePhoneTextView.setText(ambulance.getUser().getPhoneNumber());
 
-        holder.updateButton.setOnClickListener(v -> {
-            // Handle update button click here
-            Toast.makeText(context, "Update clicked for " + ambulance.getUser().getFullName(), Toast.LENGTH_SHORT).show();
-        });
-
-        holder.deleteButton.setOnClickListener(v -> {
-            // Handle delete button click here
-            Toast.makeText(context, "Delete clicked for " + ambulance.getUser().getFullName(), Toast.LENGTH_SHORT).show();
-        });
+//        holder.itemView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // Pass the selected item's ID to the fragment
+//                Fragment createAmbulance = new CreateAmbulance();
+//                Bundle args = new Bundle();
+//                args.putInt("ambulanceId", ambulance.getUser().getUserId());
+//                createAmbulance.setArguments(args);
+//
+//                FragmentTransaction fm = ((AppCompatActivity)context).getSupportFragmentManager().beginTransaction();
+//                fm.replace(R.id.adminFrameLayout, createAmbulance).addToBackStack(null).commit();
+//            }
+//        });
     }
 
     @Override
@@ -60,16 +70,12 @@ public class AmbulanceAdapater extends RecyclerView.Adapter<AmbulanceAdapater.Vi
         public TextView ambulanceNameTextView;
         public TextView ambulanceLocationTextView;
         public TextView ambulancePhoneTextView;
-        public Button updateButton;
-        public Button deleteButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ambulanceNameTextView = itemView.findViewById(R.id.userNameTextView_update);
             ambulanceLocationTextView = itemView.findViewById(R.id.userLocationTextView_update);
             ambulancePhoneTextView = itemView.findViewById(R.id.userPhoneNumberTextView_update);
-            updateButton = itemView.findViewById(R.id.updateUserButton_update);
-            deleteButton = itemView.findViewById(R.id.deleteUserButton_update);
         }
     }
 }

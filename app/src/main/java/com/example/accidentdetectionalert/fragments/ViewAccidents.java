@@ -42,7 +42,7 @@ public class ViewAccidents extends Fragment {
         User user = databaseHelper.getUser(userId);
 
         if (user.getRole().equals("admin")) {
-            accidentList = databaseHelper.getAllAccidentsWithUserDetails();
+            accidentList = databaseHelper.getAllAccidentsWithUserDetails(true);
         } else if(user.getRole().equals("hospital")) {
             accidentList = databaseHelper.getAccidentsForHospital(userId);
         }

@@ -18,7 +18,7 @@ import com.example.accidentdetectionalert.models.User;
 
 public class LoginActivity extends AppCompatActivity {
     private EditText emailEditText, passwordEditText;
-    private Button loginButton;
+    private Button loginButton, signUpButton;
     private DatabaseHelper databaseHelper;
     private SharedPreferences sharedPreferences;
 
@@ -30,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
         emailEditText = findViewById(R.id.editLoginId);
         passwordEditText = findViewById(R.id.editLoginPassword);
         loginButton = findViewById(R.id.loginButton);
+        signUpButton = findViewById(R.id.signUpButtonLogin);
 
         databaseHelper = new DatabaseHelper(this);
 
@@ -40,8 +41,17 @@ public class LoginActivity extends AppCompatActivity {
                 login();
             }
         });
+        signUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signUp();
+            }
+        });
     }
-
+    void signUp(){
+        Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
+        startActivity(intent);
+    }
     private void login() {
         String email = emailEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();

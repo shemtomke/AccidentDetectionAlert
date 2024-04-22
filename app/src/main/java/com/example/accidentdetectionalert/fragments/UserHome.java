@@ -1,5 +1,6 @@
 package com.example.accidentdetectionalert.fragments;
 
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -28,26 +29,18 @@ import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
+import com.example.accidentdetectionalert.database.DatabaseHelper;
+import com.example.accidentdetectionalert.models.Accident;
+import com.example.accidentdetectionalert.models.HistoryAlert;
+import com.example.accidentdetectionalert.models.User;
 import com.example.accidentdetectionalert.utils.LocationUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.util.Date;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link UserHome#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class UserHome extends Fragment implements SensorEventListener {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
     private TextView accelerometerText;
     private TextView soundMeterText;
     private Switch detectionSwitch;
@@ -66,36 +59,11 @@ public class UserHome extends Fragment implements SensorEventListener {
     private Handler mHandler = new Handler();
     private AlertDialog alertDialog;
     private static final int NOTIFICATION_DELAY = 5000; // 5 seconds delay
-    public UserHome() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment UserHome.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static UserHome newInstance(String param1, String param2) {
-        UserHome fragment = new UserHome();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    String currentLocation;
+    DatabaseHelper databaseHelper;
+    User user;
+    private SharedPreferences sharedPreferences;
+    int userId;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -104,6 +72,12 @@ public class UserHome extends Fragment implements SensorEventListener {
         accelerometerText = view.findViewById(R.id.accelerometerText);
         soundMeterText = view.findViewById(R.id.soundMeterText);
         detectionSwitch = view.findViewById(R.id.switchDetection);
+
+        databaseHelper = new DatabaseHelper(getActivity());
+        sharedPreferences = requireActivity().getApplicationContext().getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
+        userId = sharedPreferences.getInt("userId", -1);
+
+        user = databaseHelper.getUser(userId);
 
         requestLocationPermission();
         getCurrentLocation();
@@ -196,7 +170,7 @@ public class UserHome extends Fragment implements SensorEventListener {
         }
     }
     private void getCurrentLocation() {
-        String currentLocation = LocationUtils.getCurrentLocation(getContext().getApplicationContext());
+        currentLocation = LocationUtils.getCurrentLocation(getContext().getApplicationContext());
         Toast.makeText(requireContext(), "Current Location: " + currentLocation, Toast.LENGTH_SHORT).show();
     }
     // Handle the permissions request
@@ -272,15 +246,15 @@ public class UserHome extends Fragment implements SensorEventListener {
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
-    // If it finds the App Notifies the User to verify if it’s a false alarm,
-    // if no action is done in 5 secs
-    // the Ambulance is assigned & notifies Hospital, Ambulance and Police about the accident
-    // with the location & User details.
+
     private void showAlertAndNotifyUser() {
         if (alertDialog != null && alertDialog.isShowing()) {
             // Dialog is already showing, do nothing
             return;
         }
+
+        long currentTimeMillis = System.currentTimeMillis();
+        String dateTime = DateFormat.getDateTimeInstance().format(new Date(currentTimeMillis));
 
         // Show alert dialog to verify if it's a false alarm
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -289,11 +263,19 @@ public class UserHome extends Fragment implements SensorEventListener {
                 .setPositiveButton("Notify Authorities", (dialog, id) -> {
                     // User verifies and notifies authorities
                     assignAmbulanceAndNotifyAuthorities();
+
+                    HistoryAlert historyAlert = new HistoryAlert(user, dateTime, "Assigned Authorities!");
+                    databaseHelper.createHistoryAlert(historyAlert);
+
                     alertDialog.dismiss();
                     alertDialog = null;
                 })
                 .setNegativeButton("False Alarm!", (dialog, id) -> {
                     // User cancels, stop the notification and ambulance assignment
+
+                    HistoryAlert historyAlert = new HistoryAlert(user, dateTime, "False Alarm!");
+                    databaseHelper.createHistoryAlert(historyAlert);
+
                     mHandler.removeCallbacksAndMessages(null);
                     alertDialog.dismiss();
                     alertDialog = null;
@@ -311,13 +293,19 @@ public class UserHome extends Fragment implements SensorEventListener {
             }
         }, NOTIFICATION_DELAY);
     }
-
     private void assignAmbulanceAndNotifyAuthorities() {
         // Notify Hospital, Ambulance, and Police about the accident with the location & User details
         Toast.makeText(requireContext(), "Ambulance assigned! Notifying authorities...", Toast.LENGTH_SHORT).show();
 
-        // You can implement the logic to notify authorities here
-        // 1. Get the current location
-        // 2. Send notification to hospital, ambulance, and police with the location and user details
+        // Get current date and time
+        long currentTimeMillis = System.currentTimeMillis();
+        String dateTime = DateFormat.getDateTimeInstance().format(new Date(currentTimeMillis));
+
+        // Creating the accident will notify every authority about the accident
+        Accident accident = new Accident(user, dateTime, currentLocation);
+        databaseHelper.createAccident(accident);
+
+        // The assigned ambulance is able to update the status of the accident
+        databaseHelper.assignAmbulance(accident.getAccidentId());
     }
 }
