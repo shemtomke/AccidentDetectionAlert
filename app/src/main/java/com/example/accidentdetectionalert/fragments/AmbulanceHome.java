@@ -22,7 +22,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.List;
 
 public class AmbulanceHome extends Fragment implements OnMapReadyCallback {
-    private GoogleMap googleMap;
     DatabaseHelper databaseHelper;
     List<Accident> allAccidentList;
     @Override
@@ -43,8 +42,6 @@ public class AmbulanceHome extends Fragment implements OnMapReadyCallback {
     }
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        this.googleMap = googleMap;
-
         for (Accident accident : allAccidentList) {
             String locationString = accident.getLocation(); // Assuming getLocation() returns the location string
             String[] parts = locationString.split(",");

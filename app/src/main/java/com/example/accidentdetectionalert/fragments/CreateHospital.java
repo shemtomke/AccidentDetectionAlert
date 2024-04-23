@@ -83,9 +83,10 @@ public class CreateHospital extends Fragment {
         }
 
         User user = new User(hospitalName, email, password, phoneNumber, "hospital");
-        databaseHelper.createUser(user);
+        int userId = databaseHelper.createUserDetails(user);
+        user.setUserId(userId);
 
-        Hospital hospital = new Hospital(databaseHelper.getUser(user.getUserId()));
+        Hospital hospital = new Hospital(databaseHelper.getUser(userId));
         try {
             databaseHelper.createHospital(hospital);
             Log.i("User Id", user.getUserId() + user.getFullName());

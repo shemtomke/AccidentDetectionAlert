@@ -19,6 +19,7 @@ import com.example.accidentdetectionalert.models.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "detection_system.db";
@@ -58,6 +59,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void createHistoryAlert(HistoryAlert historyAlert) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+        Random random = new Random();
+        int id = random.nextInt(Integer.MAX_VALUE); // Generate a random integer ID
+        values.put("id", id);
         values.put("user_id", historyAlert.getUser().getUserId());
         values.put("date_time", historyAlert.getDateTime());
         values.put("status", historyAlert.getStatus());
@@ -92,14 +96,46 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // User
     public void createUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("fullname", user.getFullName());
-        values.put("email", user.getEmail());
-        values.put("password", user.getPassword());
-        values.put("phonenumber", user.getPhoneNumber());
-        values.put("role", user.getRole());
-        db.insert("user", null, values);
-        db.close();
+        try {
+            ContentValues values = new ContentValues();
+            Random random = new Random();
+            int id = random.nextInt(Integer.MAX_VALUE); // Generate a random integer ID
+            values.put("id", id);
+            values.put("fullname", user.getFullName());
+            values.put("email", user.getEmail());
+            values.put("password", user.getPassword());
+            values.put("phonenumber", user.getPhoneNumber());
+            values.put("role", user.getRole());
+            db.insert("user", null, values);
+        } catch (Exception e) {
+            // Handle the exception
+            e.printStackTrace();
+        } finally {
+            db.close();
+        }
+    }
+    public int createUserDetails(User user) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int userId = -1; // Initialize userId to -1 to indicate failure
+        try {
+            ContentValues values = new ContentValues();
+            // Generate a random unique ID for the user
+            Random random = new Random();
+            userId = random.nextInt(Integer.MAX_VALUE); // Generate a random integer ID
+            values.put("id", userId);
+            values.put("fullname", user.getFullName());
+            values.put("email", user.getEmail());
+            values.put("password", user.getPassword());
+            values.put("phonenumber", user.getPhoneNumber());
+            values.put("role", user.getRole());
+            db.insert("user", null, values);
+        } catch (Exception e) {
+            // Handle the exception
+            e.printStackTrace();
+        } finally {
+            db.close();
+        }
+        return userId; // Return the generated userId
     }
     public void updateUserById(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -179,6 +215,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         User user = accident.getUser();
         ContentValues values = new ContentValues();
+        Random random = new Random();
+        int id = random.nextInt(Integer.MAX_VALUE); // Generate a random integer ID
+        values.put("id", id);
         values.put("user_id", user.getUserId());
         values.put("date_time", accident.getDateTime());
         values.put("location", accident.getLocation());
@@ -362,6 +401,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         User user = emergencyContact.getUser();
         ContentValues values = new ContentValues();
+        Random random = new Random();
+        int id = random.nextInt(Integer.MAX_VALUE); // Generate a random integer ID
+        values.put("id", id);
         values.put("user_id", user.getUserId());
         values.put("name", emergencyContact.getFullName());
         values.put("phoneNumber", emergencyContact.getPhoneContact());
@@ -452,6 +494,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         User user = hospital.getUser();
         ContentValues values = new ContentValues();
+        Random random = new Random();
+        int id = random.nextInt(Integer.MAX_VALUE); // Generate a random integer ID
+        values.put("id", id);
         values.put("user_id", user.getUserId());
         values.put("location", hospital.getLocation());
         db.insert("hospital", null, values);
@@ -509,6 +554,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         User user = police.getUser();
         ContentValues values = new ContentValues();
+        Random random = new Random();
+        int id = random.nextInt(Integer.MAX_VALUE); // Generate a random integer ID
+        values.put("id", id);
         values.put("user_id", user.getUserId());
         values.put("location", police.getLocation());
         db.insert("police", null, values);
@@ -546,6 +594,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Hospital hospital = ambulance.getHospital();
 
         ContentValues values = new ContentValues();
+        Random random = new Random();
+        int id = random.nextInt(Integer.MAX_VALUE); // Generate a random integer ID
+        values.put("id", id);
         values.put("user_id", user.getUserId());
         values.put("hospital_id", hospital.getHospitalId());
         values.put("location", ambulance.getLocation());
@@ -568,7 +619,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.update("ambulance", values, selection, selectionArgs);
         db.close();
     }
-
     public void deleteAmbulance(int ambulanceId) {
         SQLiteDatabase db = this.getWritableDatabase();
         String selection = "id=?";

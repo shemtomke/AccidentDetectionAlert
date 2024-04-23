@@ -37,7 +37,7 @@ public class ViewHospitals extends Fragment {
         recyclerView = view.findViewById(R.id.adminHospitalsRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        databaseHelper = new DatabaseHelper(getActivity());
+        databaseHelper = new DatabaseHelper(requireContext());
         hospitalList = databaseHelper.getAllHospitals();
         Log.d("ViewHospitals", "Hospital List Size: " + hospitalList.size());
         adapter = new HospitalAdapter(hospitalList, getActivity());

@@ -31,7 +31,6 @@ public class ViewAmbulance extends Fragment {
     private DatabaseHelper databaseHelper;
     private SharedPreferences sharedPreferences;
     int userId;
-    User user;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -41,19 +40,17 @@ public class ViewAmbulance extends Fragment {
         createAmbulanceButton = view.findViewById(R.id.createAmbualnceAdmin);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        databaseHelper = new DatabaseHelper(getActivity());
+        databaseHelper = new DatabaseHelper(requireContext());
 
         sharedPreferences = requireActivity().getApplicationContext().getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
-        userId = sharedPreferences.getInt("userId", -1);
-
-        user = databaseHelper.getUser(userId);
+        int userId = sharedPreferences.getInt("userId", -1);
 
         // Check if admin or Hospital that has logged In - Role (Check With Role)
-        if(user.getRole().equals("admin"))
+        if(databaseHelper.getUser(userId).getRole().equals("admin"))
         {
             adapter = new AmbulanceAdapater(databaseHelper.getAllAmbulances(), getActivity());
         }
-        else if(user.getRole().equals("hospital"))
+        else if(databaseHelper.getUser(userId).getRole().equals("hospital"))
         {
             adapter = new AmbulanceAdapater(databaseHelper.getAmbulancesForHospital(userId), getActivity());
         }
@@ -75,11 +72,11 @@ public class ViewAmbulance extends Fragment {
         Fragment createAmbulancePage = new CreateAmbulance();
         FragmentTransaction fm = getActivity().getSupportFragmentManager().beginTransaction();
 
-        if(user.getRole().equals("admin"))
+        if(databaseHelper.getUser(userId).getRole().equals("admin"))
         {
             fm.replace(R.id.adminFrameLayout, createAmbulancePage).addToBackStack(null).commit();
         }
-        else if(user.getRole().equals("hospital"))
+        else if(databaseHelper.getUser(userId).getRole().equals("hospital"))
         {
             fm.replace(R.id.hospitalFrameLayout, createAmbulancePage).addToBackStack(null).commit();
         }

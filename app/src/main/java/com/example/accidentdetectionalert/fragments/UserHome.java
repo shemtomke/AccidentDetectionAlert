@@ -61,7 +61,6 @@ public class UserHome extends Fragment implements SensorEventListener {
     private static final int NOTIFICATION_DELAY = 5000; // 5 seconds delay
     String currentLocation;
     DatabaseHelper databaseHelper;
-    User user;
     private SharedPreferences sharedPreferences;
     int userId;
     @Override
@@ -77,10 +76,7 @@ public class UserHome extends Fragment implements SensorEventListener {
         sharedPreferences = requireActivity().getApplicationContext().getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         userId = sharedPreferences.getInt("userId", -1);
 
-        user = databaseHelper.getUser(userId);
-
         requestLocationPermission();
-        getCurrentLocation();
 
         sensorManager = (SensorManager) requireContext().getSystemService(Context.SENSOR_SERVICE);
 
@@ -170,8 +166,9 @@ public class UserHome extends Fragment implements SensorEventListener {
         }
     }
     private void getCurrentLocation() {
-        currentLocation = LocationUtils.getCurrentLocation(getContext().getApplicationContext());
-        Toast.makeText(requireContext(), "Current Location: " + currentLocation, Toast.LENGTH_SHORT).show();
+        String location = LocationUtils.getCurrentLocation(getContext().getApplicationContext());
+        currentLocation = location;
+        Toast.makeText(requireContext(), "Current Location: " + location, Toast.LENGTH_SHORT).show();
     }
     // Handle the permissions request
     @Override
@@ -264,7 +261,7 @@ public class UserHome extends Fragment implements SensorEventListener {
                     // User verifies and notifies authorities
                     assignAmbulanceAndNotifyAuthorities();
 
-                    HistoryAlert historyAlert = new HistoryAlert(user, dateTime, "Assigned Authorities!");
+                    HistoryAlert historyAlert = new HistoryAlert(databaseHelper.getUser(userId), dateTime, "Assigned Authorities!");
                     databaseHelper.createHistoryAlert(historyAlert);
 
                     alertDialog.dismiss();
@@ -273,7 +270,7 @@ public class UserHome extends Fragment implements SensorEventListener {
                 .setNegativeButton("False Alarm!", (dialog, id) -> {
                     // User cancels, stop the notification and ambulance assignment
 
-                    HistoryAlert historyAlert = new HistoryAlert(user, dateTime, "False Alarm!");
+                    HistoryAlert historyAlert = new HistoryAlert(databaseHelper.getUser(userId), dateTime, "False Alarm!");
                     databaseHelper.createHistoryAlert(historyAlert);
 
                     mHandler.removeCallbacksAndMessages(null);
@@ -302,7 +299,7 @@ public class UserHome extends Fragment implements SensorEventListener {
         String dateTime = DateFormat.getDateTimeInstance().format(new Date(currentTimeMillis));
 
         // Creating the accident will notify every authority about the accident
-        Accident accident = new Accident(user, dateTime, currentLocation);
+        Accident accident = new Accident(databaseHelper.getUser(userId), dateTime, currentLocation, "None");
         databaseHelper.createAccident(accident);
 
         // The assigned ambulance is able to update the status of the accident

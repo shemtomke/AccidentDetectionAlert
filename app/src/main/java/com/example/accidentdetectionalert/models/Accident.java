@@ -40,6 +40,13 @@ public class Accident {
         dateTime = _dateTime;
         location = _location;
     }
+    public Accident(User _user, String _dateTime, String _location, String _status)
+    {
+        user = _user;
+        dateTime = _dateTime;
+        location = _location;
+        status = _status;
+    }
     public Accident(int _accidentId, String _dateTime, String _location, String _status)
     {
         accidentId = _accidentId;

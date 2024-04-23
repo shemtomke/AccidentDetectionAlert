@@ -15,6 +15,8 @@ import com.example.accidentdetectionalert.R;
 import com.example.accidentdetectionalert.database.DatabaseHelper;
 import com.example.accidentdetectionalert.models.User;
 
+import java.util.Random;
+
 public class SignUpActivity extends AppCompatActivity {
     Button signUpButton, loginButton;
     EditText fullNameText, emailText, passwordText, phoneNumberText;
@@ -62,13 +64,15 @@ public class SignUpActivity extends AppCompatActivity {
         }
 
         // Creating normal users
-        User user = new User(fullName, email, password, phoneNumber, "citizen");
+        Random random = new Random();
+        int userId = random.nextInt(Integer.MAX_VALUE);
+        User user = new User(userId, fullName, email, password, phoneNumber, "citizen");
         databaseHelper.createUser(user);
 
         SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("userId", user.getUserId());
-        editor.commit();
+        editor.putInt("userId", userId);
+        editor.apply();
 
         Toast.makeText(SignUpActivity.this, "User registered successfully", Toast.LENGTH_SHORT).show();
         finish();

@@ -39,11 +39,9 @@ public class ViewAccidents extends Fragment {
         sharedPreferences = requireActivity().getApplicationContext().getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         userId = sharedPreferences.getInt("userId", -1);
 
-        User user = databaseHelper.getUser(userId);
-
-        if (user.getRole().equals("admin")) {
+        if (databaseHelper.getUser(userId).getRole().equals("admin")) {
             accidentList = databaseHelper.getAllAccidentsWithUserDetails(true);
-        } else if(user.getRole().equals("hospital")) {
+        } else if(databaseHelper.getUser(userId).getRole().equals("hospital")) {
             accidentList = databaseHelper.getAccidentsForHospital(userId);
         }
 

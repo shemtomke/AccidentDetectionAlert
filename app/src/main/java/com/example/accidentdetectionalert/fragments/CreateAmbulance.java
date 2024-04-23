@@ -27,6 +27,7 @@ import com.example.accidentdetectionalert.models.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class CreateAmbulance extends Fragment {
     EditText driverFullNameText, emailText, phoneNumberText, passwordText;
@@ -37,7 +38,6 @@ public class CreateAmbulance extends Fragment {
     DatabaseHelper databaseHelper;
     private SharedPreferences sharedPreferences;
     int userId;
-    User user;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -58,8 +58,6 @@ public class CreateAmbulance extends Fragment {
 
         sharedPreferences = requireActivity().getApplicationContext().getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         userId = sharedPreferences.getInt("userId", -1);
-
-        user = databaseHelper.getUser(userId);
 
         populateSpinner();
         hospitalsSpinner.setEnabled(false);
@@ -83,6 +81,12 @@ public class CreateAmbulance extends Fragment {
                 deleteAmbulance();
             }
         });
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GoToViewAmbulances();
+            }
+        });
 
         // Inflate the layout for this fragment
         return view;
@@ -93,8 +97,6 @@ public class CreateAmbulance extends Fragment {
         String email = emailText.getText().toString().trim();
         String phoneNumber = phoneNumberText.getText().toString().trim();
         String password = passwordText.getText().toString().trim();
-
-        User ambulanceUser = new User(fullName, email, password, phoneNumber, "ambulance");
 
         int hospitalId = -1;
         if(isHospitalCheckBox.isChecked()) {
@@ -107,9 +109,14 @@ public class CreateAmbulance extends Fragment {
             return;
         }
 
-        databaseHelper.createUser(ambulanceUser);
+        User ambulanceUser = new User(fullName, email, password, phoneNumber, "ambulance");
+        int userId = databaseHelper.createUserDetails(ambulanceUser);
+        ambulanceUser.setUserId(userId);
 
-        Ambulance newAmbulance = new Ambulance(ambulanceUser, new Hospital(hospitalId), "Ambulance Location");
+        Random random = new Random();
+        int ambulanceId = random.nextInt(Integer.MAX_VALUE);
+
+        Ambulance newAmbulance = new Ambulance(ambulanceId, databaseHelper.getUser(userId), new Hospital(hospitalId), "Ambulance Location");
 
         try {
             databaseHelper.createAmbulance(newAmbulance);
@@ -176,10 +183,10 @@ public class CreateAmbulance extends Fragment {
         Fragment viewAmbulancePage = new ViewAmbulance();
         FragmentTransaction fm = getActivity().getSupportFragmentManager().beginTransaction();
 
-        if(user.getRole().equals("admin"))
+        if(databaseHelper.getUser(userId).getRole().equals("admin"))
         {
             fm.replace(R.id.adminFrameLayout, viewAmbulancePage).addToBackStack(null).commit();
-        } else if(user.getRole().equals("hospital")){
+        } else if(databaseHelper.getUser(userId).getRole().equals("hospital")){
             fm.replace(R.id.hospitalFrameLayout, viewAmbulancePage).addToBackStack(null).commit();
         }
     }
